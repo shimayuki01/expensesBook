@@ -1,3 +1,4 @@
+import 'package:expenses_book_app/add_page.dart';
 import 'package:flutter/material.dart';
 
 import 'detail.dart';
@@ -73,8 +74,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: (){},
-        tooltip: 'Increment',
+        onPressed: () {
+          Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Add_page()),
+          );
+        },
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
