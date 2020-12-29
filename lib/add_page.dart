@@ -19,6 +19,7 @@ class Add extends State<Add_page> {
   // int _day = _Date.day;
   String _name = '';
   String _money = '';
+  int _id = 1;
 
   //収支の切り替え
   void _onChanged(String payment) => setState(() {
@@ -32,6 +33,7 @@ class Add extends State<Add_page> {
     });
     print('$_name');
   }
+
 //金額の変更
   void _handleMoney(String money) {
     setState(() {
@@ -85,7 +87,7 @@ class Add extends State<Add_page> {
                   }
                 }),
 
-           //日付の表示
+            //日付の表示
             Text(
               DateFormat('yyyy年M月d日').format(_Date),
               style: TextStyle(fontSize: 25),
@@ -114,9 +116,21 @@ class Add extends State<Add_page> {
               onChanged: _handleMoney,
             ),
             RaisedButton(
-                child: const Text("追加"), color: Colors.blue, onPressed: () {
+                child: const Text("追加"),
+                color: Colors.blue,
+                onPressed: () async {
                   //追加処理
-            }),
+                 var add = Expense(
+                      id: _id,
+                      payment: _payment,
+                      year: _Date.year,
+                      month: _Date.month,
+                      day: _Date.day,
+                      name: _name,
+                      money: _money);
+
+                  await insertExpense(add);
+                }),
           ],
         ));
   }

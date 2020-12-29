@@ -4,13 +4,61 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-
-
 import 'detail.dart';
+import 'package:flutter/widgets.dart';
 
-void main() {
-  runApp(MyApp());
+//データベースに格納するクラス作成
+class Expense {
+  final int id;
+  final int year;
+  final int month;
+  final int day;
+  final String payment; //収支判別
+  final String name;
+  final String money;
+
+  Expense({this.id,
+      this.payment,
+      this.year,
+      this.month,
+      this.day,
+      this.name,
+      this.money});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'payment': payment,
+      'year': year,
+      'month': month,
+      'day': day,
+      'name': name,
+      'money': money,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'Expense{id: $id, payment: $payment, year: $year, month: $month, day: $day, name: $name, money: $money}';
+  }
 }
+
+void main() async {
+  //データベース作成（初期化）
+  WidgetsFlutterBinding.ensureInitialized();
+  final Future<Database> database = openDatabase(
+    join(await getDatabasesPath(), 'expenses_database.db'),
+    onCreate: (db, version) {
+      return db.execute(
+        "CREATE TABLE expenses(id INTEGER PRIMARY KEY, payment TEXT,  year Integer, month Integer, day Integer, name Text, money Integer)",
+      );
+    },
+    version: 1,
+  );
+
+    runApp(MyApp());
+}
+
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -45,7 +93,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,8 +138,8 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           //画面遷移（追加のページ）
           Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Add_page()),
+            context,
+            MaterialPageRoute(builder: (context) => Add_page()),
           );
         },
         child: Icon(Icons.add),
