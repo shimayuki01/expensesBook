@@ -12,27 +12,39 @@ class Add extends State<Add_page> {
   String _payment = 'out';
 
   //var selectedDate = DateTime.now();
-  String _Date = (DateFormat.yMd()).format(DateTime.now());
+  DateTime _Date = DateTime.now();
+
+  // int _year = _Date.year;
+  // int _month = _Date.month;
+  // int _day = _Date.day;
   String _name = '';
   String _money = '';
 
+  //収支の切り替え
   void _onChanged(String payment) => setState(() {
         _payment = payment;
       });
 
+  //名称の変更
   void _handleName(String name) {
     setState(() {
       _name = name;
     });
     print('$_name');
   }
-
+//金額の変更
   void _handleMoney(String money) {
     setState(() {
       _money = money;
     });
     print('$_money');
   }
+
+  // void _handleDate(){
+  //    _year = _Date.year;
+  //    _monrh = _Date.month;
+  //    _day = _Date.day;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +54,7 @@ class Add extends State<Add_page> {
         ),
         body: Column(
           children: [
+            //収支のラジオボタン
             RadioListTile(
                 title: Text('収入'),
                 value: 'in',
@@ -52,26 +65,33 @@ class Add extends State<Add_page> {
                 value: 'out',
                 groupValue: _payment,
                 onChanged: _onChanged),
+
+            //日付の入力
             IconButton(
                 icon: Icon(Icons.calendar_today),
                 onPressed: () async {
                   final selectedDate = await showDatePicker(
                     context: context,
                     locale: const Locale('ja'),
-                    initialDate: DateTime.now(),
+                    initialDate: _Date,
                     firstDate: DateTime(DateTime.now().year - 1),
                     lastDate: DateTime(DateTime.now().year + 1),
                   );
                   if (selectedDate != null) {
                     setState(() {
-                      _Date = DateFormat.yMd().format(selectedDate);
+                      _Date = selectedDate;
+                      //_handleDate();
                     });
                   }
                 }),
+
+           //日付の表示
             Text(
-              "$_Date",
+              DateFormat('yyyy年M月d日').format(_Date),
               style: TextStyle(fontSize: 25),
             ),
+
+            //名称の入力
             new TextField(
               maxLength: 20,
               maxLengthEnforced: true,
@@ -80,6 +100,8 @@ class Add extends State<Add_page> {
                   const InputDecoration(hintText: '入力してください', labelText: '名称'),
               onChanged: _handleName,
             ),
+
+            //金額の入力
             new TextField(
               maxLength: 7,
               maxLengthEnforced: true,
@@ -91,6 +113,10 @@ class Add extends State<Add_page> {
                   const InputDecoration(hintText: '入力してください', labelText: '金額'),
               onChanged: _handleMoney,
             ),
+            RaisedButton(
+                child: const Text("追加"), color: Colors.blue, onPressed: () {
+                  //追加処理
+            }),
           ],
         ));
   }
