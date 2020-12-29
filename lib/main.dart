@@ -1,6 +1,10 @@
 import 'package:expenses_book_app/add_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'dart:async';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+
 
 import 'detail.dart';
 
@@ -69,6 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     color: Colors.lightBlue,
                     shape: const StadiumBorder(),
                     onPressed: () {
+                      //画面遷移（詳細のペ－ジ）
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => Detail()),
@@ -84,6 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          //画面遷移（追加のページ）
           Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => Add_page()),

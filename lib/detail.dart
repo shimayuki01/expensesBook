@@ -14,6 +14,8 @@ class Detail extends StatelessWidget {
         child: ListView.builder(
           itemCount: items.length,
           itemBuilder: (context, index) {
+
+            //収支のリスト表示
             return ListTile(
               leading: Text("支出"),
               title: Text('${items[index]}'),
