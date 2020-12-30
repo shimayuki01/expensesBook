@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+import 'db_interface.dart';
+
+// ignore: camel_case_types
 class Add_page extends StatefulWidget {
   @override
   Add createState() => new Add();
@@ -18,7 +21,7 @@ class Add extends State<Add_page> {
   // int _month = _Date.month;
   // int _day = _Date.day;
   String _name = '';
-  String _money = '';
+   int _money= 0;
   int _id = 1;
 
   //収支の切り替え
@@ -37,7 +40,7 @@ class Add extends State<Add_page> {
 //金額の変更
   void _handleMoney(String money) {
     setState(() {
-      _money = money;
+      _money = int.parse(money);
     });
     print('$_money');
   }
@@ -112,7 +115,7 @@ class Add extends State<Add_page> {
                 WhitelistingTextInputFormatter(RegExp(r'[0-9]'))
               ],
               decoration:
-                  const InputDecoration(hintText: '入力してください', labelText: '金額'),
+                  const InputDecoration(hintText: '1000', labelText: '金額'),
               onChanged: _handleMoney,
             ),
             RaisedButton(
@@ -120,6 +123,9 @@ class Add extends State<Add_page> {
                 color: Colors.blue,
                 onPressed: () async {
                   //追加処理
+                  if(_payment == 'out'){
+                    _money = -_money;
+                  }
                  var add = Expense(
                       id: _id,
                       payment: _payment,
@@ -129,7 +135,9 @@ class Add extends State<Add_page> {
                       name: _name,
                       money: _money);
 
-                  await insertExpense(add);
+                  await dbInterface().insertExpense(add);
+                  _id++;
+                  print(dbInterface().expenses());
                 }),
           ],
         ));
