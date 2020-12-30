@@ -1,4 +1,5 @@
 import 'package:expenses_book_app/add_page.dart';
+import 'package:expenses_book_app/db_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'dart:async';
@@ -7,55 +8,9 @@ import 'package:sqflite/sqflite.dart';
 import 'detail.dart';
 import 'package:flutter/widgets.dart';
 
-//データベースに格納するクラス作成
-class Expense {
-  final int id;
-  final int year;
-  final int month;
-  final int day;
-  final String payment; //収支判別
-  final String name;
-  final String money;
 
-  Expense({this.id,
-      this.payment,
-      this.year,
-      this.month,
-      this.day,
-      this.name,
-      this.money});
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'payment': payment,
-      'year': year,
-      'month': month,
-      'day': day,
-      'name': name,
-      'money': money,
-    };
-  }
-
-  @override
-  String toString() {
-    return 'Expense{id: $id, payment: $payment, year: $year, month: $month, day: $day, name: $name, money: $money}';
-  }
-}
-
-void main() async {
-  //データベース作成（初期化）
-  WidgetsFlutterBinding.ensureInitialized();
-  final Future<Database> database = openDatabase(
-    join(await getDatabasesPath(), 'expenses_database.db'),
-    onCreate: (db, version) {
-      return db.execute(
-        "CREATE TABLE expenses(id INTEGER PRIMARY KEY, payment TEXT,  year Integer, month Integer, day Integer, name Text, money Integer)",
-      );
-    },
-    version: 1,
-  );
-
+void main() {
+    dbInterface().init();
     runApp(MyApp());
 }
 
