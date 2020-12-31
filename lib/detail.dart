@@ -1,7 +1,8 @@
+import 'package:expenses_book_app/db_interface.dart';
 import 'package:flutter/material.dart';
 
 class Detail extends StatelessWidget {
-  final items = List<String>.generate(10000, (i) => "Item $i");
+  final List items = dbInterface().expenses() as List;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class Detail extends StatelessWidget {
             return ListTile(
               leading: Text("支出"),
               title: Text('${items[index]}'),
-              trailing: Text("money"),
+              trailing: Text(""),
             );
           },
         ),

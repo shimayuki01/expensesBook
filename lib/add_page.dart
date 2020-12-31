@@ -1,8 +1,8 @@
+import 'dart:developer';
 import 'package:expenses_book_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-
 import 'db_interface.dart';
 
 // ignore: camel_case_types
@@ -21,7 +21,7 @@ class Add extends State<Add_page> {
   // int _month = _Date.month;
   // int _day = _Date.day;
   String _name = '';
-   int _money= 0;
+  int _money = 0;
   int _id = 1;
 
   //収支の切り替え
@@ -34,7 +34,7 @@ class Add extends State<Add_page> {
     setState(() {
       _name = name;
     });
-    print('$_name');
+    log("$_name");
   }
 
 //金額の変更
@@ -123,10 +123,10 @@ class Add extends State<Add_page> {
                 color: Colors.blue,
                 onPressed: () async {
                   //追加処理
-                  if(_payment == 'out'){
+                  if (_payment == 'out') {
                     _money = -_money;
                   }
-                 var add = Expense(
+                  var add = Expense(
                       id: _id,
                       payment: _payment,
                       year: _Date.year,
@@ -137,8 +137,9 @@ class Add extends State<Add_page> {
 
                   await dbInterface().insertExpense(add);
                   _id++;
-                  print(dbInterface().expenses());
+                  //(dbInterface().expenses());
                 }),
+            //Text(dbInterface().expenses()['id']),
           ],
         ));
   }
