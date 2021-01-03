@@ -7,16 +7,21 @@ import 'db_interface.dart';
 class del_upd_page extends StatefulWidget {
   @override
   //idの受け渡し
-  int _id = id;
+  final int id;
+
+  const del_upd_page({Key key, this.id}) : super(key: key);
+
   delUpd createState() => new delUpd();
 }
 
 class delUpd extends State<del_upd_page> {
-  Expense info = dbInterface().data(_id);
+  Expense info = dbInterface().data(id);
   String _payment = info.payment;
   DateTime _Date = DateTime(info.year, info.month, info.day);
   String _name = info.name;
   int _money = info.money;
+
+  int get id => null;
 
   //収支の切り替え
   void _onChanged(String payment) => setState(() {
@@ -48,11 +53,11 @@ class delUpd extends State<del_upd_page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("修正ページ"),
-          //ゴミ箱アイコン作成
-          iconTheme: IconButton(),
-        ),
+        appBar: AppBar(title: Text("修正ページ"),
+            //ゴミ箱アイコン作成
+            actions: [
+              IconButton(icon: Icon(Icons.delete), onPressed: dbInterface().deleteExpense(id);Navigator.pop();),
+            ]),
         body: Column(
           children: [
             //収支のラジオボタン
