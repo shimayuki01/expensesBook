@@ -45,6 +45,13 @@ class Add extends State<Add_page> {
     print('$_money');
   }
 
+  //idのインクリメント
+  void _handleId() {
+    setState(() {
+      _id++;
+    });
+  }
+
   // void _handleDate(){
   //    _year = _Date.year;
   //    _monrh = _Date.month;
@@ -95,6 +102,7 @@ class Add extends State<Add_page> {
               DateFormat('yyyy年M月d日').format(_Date),
               style: TextStyle(fontSize: 25),
             ),
+            Text('$_id'),
 
             //名称の入力
             new TextField(
@@ -136,8 +144,8 @@ class Add extends State<Add_page> {
                       money: _money);
 
                   await dbInterface().insertExpense(add);
-                  _id++;
-                  //(dbInterface().expenses());
+                  _handleId();
+                  print(dbInterface().expenses());
                 }),
             //Text(dbInterface().expenses()['id']),
           ],
