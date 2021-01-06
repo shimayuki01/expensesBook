@@ -50,8 +50,9 @@ class dbInterface {
 
   //データベース作成（初期化）
   Future<Database> get databace async {
+    print("initinit");
     if (_database != null) return _database;
-    _database = await _initDatabase();
+    return _database = await _initDatabase();
   }
 
   _initDatabase() async {
@@ -74,6 +75,7 @@ class dbInterface {
 
   //データ挿入
   Future<void> insertExpense(Expense expense) async {
+    print("add");
     final Database db = await databace;
 
     await db.insert(
@@ -86,7 +88,7 @@ class dbInterface {
   //データ表示
   Future<List<Expense>> expenses() async {
     final Database db = _database;
-    final List<Map<String, dynamic>> maps = await db.query('expenses');
+    final List<Map<String, dynamic>> maps = await db.query("expenses");
     return List.generate(maps.length, (i) {
       return Expense(
         id: maps[i]['id'],

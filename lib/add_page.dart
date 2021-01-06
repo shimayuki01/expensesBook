@@ -50,6 +50,7 @@ class Add extends State<Add_page> {
     setState(() {
       _id++;
     });
+    print('$_id');
   }
 
   // void _handleDate(){
@@ -134,7 +135,7 @@ class Add extends State<Add_page> {
                   if (_payment == 'out') {
                     _money = -_money;
                   }
-                  var add = Expense(
+                  Expense add = Expense(
                       id: _id,
                       payment: _payment,
                       year: _Date.year,
