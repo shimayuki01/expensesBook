@@ -46,13 +46,19 @@ class Expense {
 
 //データベースインタフェース
 class dbInterface {
-  Database _database;
+  static Database _database;
 
   //データベース作成（初期化）
-  Future<Database> get databace async {
+  void init() async{
+    _database = await database;
+  }
+
+  Future<Database> get database async {
     print("initinit");
     if (_database != null) return _database;
-    return _database = await _initDatabase();
+
+    _database = await _initDatabase();
+    return _database;
   }
 
   _initDatabase() async {
@@ -65,7 +71,6 @@ class dbInterface {
       version: 1,
       onCreate: (db, version) {
         return db.execute(
-          //"CREATE TABLE expenses(id INTEGER PRIMARY KEY, payment TEXT,  year Integer, month Integer, day Integer, name Text, money Integer)",
           "CREATE TABLE expenses(id INTEGER PRIMARY KEY, year Integer, month Integer, day Integer, name Text, money Integer)",
         );
       },
@@ -73,22 +78,29 @@ class dbInterface {
     );
   }
 
+  //データベース削除
+  Future<void> delDb() async {
+    Directory documentDirectory = await getApplicationDocumentsDirectory();
+    final path = join(documentDirectory.path, "expenses_database.db");
+    print("delDb");
+    await deleteDatabase(path);
+
+  }
+
   //データ挿入
   Future<void> insertExpense(Expense expense) async {
     print("add");
-    final Database db = await databace;
 
-    await db.insert(
+    await _database.insert(
       'expenses',
       expense.toMap(),
-      //conflictAlgorithm: ConflictAlgorithm.replace,
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
   //データ表示
   Future<List<Expense>> expenses() async {
-    final Database db = _database;
-    final List<Map<String, dynamic>> maps = await db.query("expenses");
+    final List<Map<String, dynamic>> maps = await _database.query("expenses");
     return List.generate(maps.length, (i) {
       return Expense(
         id: maps[i]['id'],
