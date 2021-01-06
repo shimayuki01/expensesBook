@@ -105,27 +105,30 @@ class Add extends State<Add_page> {
             ),
             Text('$_id'),
 
-            //名称の入力
-            new TextField(
-              maxLength: 20,
-              maxLengthEnforced: true,
-              maxLines: 1,
-              decoration:
-                  const InputDecoration(hintText: '入力してください', labelText: '名称'),
-              onChanged: _handleName,
+            SingleChildScrollView(
+              //名称の入力
+              child: TextField(
+                maxLength: 20,
+                maxLengthEnforced: true,
+                maxLines: 1,
+                decoration: const InputDecoration(
+                    hintText: '入力してください', labelText: '名称'),
+                onChanged: _handleName,
+              ),
             ),
-
-            //金額の入力
-            new TextField(
-              maxLength: 7,
-              maxLengthEnforced: true,
-              maxLines: 1,
-              inputFormatters: [
-                WhitelistingTextInputFormatter(RegExp(r'[0-9]'))
-              ],
-              decoration:
-                  const InputDecoration(hintText: '1000', labelText: '金額'),
-              onChanged: _handleMoney,
+            SingleChildScrollView(
+              //金額の入力
+              child: TextField(
+                maxLength: 7,
+                maxLengthEnforced: true,
+                maxLines: 1,
+                inputFormatters: [
+                  WhitelistingTextInputFormatter(RegExp(r'[0-9]'))
+                ],
+                decoration:
+                    const InputDecoration(hintText: '1000', labelText: '金額'),
+                onChanged: _handleMoney,
+              ),
             ),
             RaisedButton(
                 child: const Text("追加"),
@@ -146,7 +149,7 @@ class Add extends State<Add_page> {
 
                   await dbInterface().insertExpense(add);
                   _handleId();
-                  print(dbInterface().expenses());
+                  print(await dbInterface().expenses());
                 }),
             //Text(dbInterface().expenses()['id']),
           ],
