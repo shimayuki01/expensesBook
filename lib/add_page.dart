@@ -65,49 +65,49 @@ class Add extends State<Add_page> {
         appBar: AppBar(
           title: Text("追加ページ"),
         ),
-        body: Column(
-          children: [
-            //収支のラジオボタン
-            RadioListTile(
-                title: Text('収入'),
-                value: 'in',
-                groupValue: _payment,
-                onChanged: _onChanged),
-            RadioListTile(
-                title: Text('支出'),
-                value: 'out',
-                groupValue: _payment,
-                onChanged: _onChanged),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              //収支のラジオボタン
+              RadioListTile(
+                  title: Text('収入'),
+                  value: 'in',
+                  groupValue: _payment,
+                  onChanged: _onChanged),
+              RadioListTile(
+                  title: Text('支出'),
+                  value: 'out',
+                  groupValue: _payment,
+                  onChanged: _onChanged),
 
-            //日付の入力
-            IconButton(
-                icon: Icon(Icons.calendar_today),
-                onPressed: () async {
-                  final selectedDate = await showDatePicker(
-                    context: context,
-                    locale: const Locale('ja'),
-                    initialDate: _Date,
-                    firstDate: DateTime(DateTime.now().year - 1),
-                    lastDate: DateTime(DateTime.now().year + 1),
-                  );
-                  if (selectedDate != null) {
-                    setState(() {
-                      _Date = selectedDate;
-                      //_handleDate();
-                    });
-                  }
-                }),
+              //日付の入力
+              IconButton(
+                  icon: Icon(Icons.calendar_today),
+                  onPressed: () async {
+                    final selectedDate = await showDatePicker(
+                      context: context,
+                      locale: const Locale('ja'),
+                      initialDate: _Date,
+                      firstDate: DateTime(DateTime.now().year - 1),
+                      lastDate: DateTime(DateTime.now().year + 1),
+                    );
+                    if (selectedDate != null) {
+                      setState(() {
+                        _Date = selectedDate;
+                        //_handleDate();
+                      });
+                    }
+                  }),
 
-            //日付の表示
-            Text(
-              DateFormat('yyyy年M月d日').format(_Date),
-              style: TextStyle(fontSize: 25),
-            ),
-            Text('$_id'),
+              //日付の表示
+              Text(
+                DateFormat('yyyy年M月d日').format(_Date),
+                style: TextStyle(fontSize: 25),
+              ),
+              Text('$_id'),
 
-            SingleChildScrollView(
               //名称の入力
-              child: TextField(
+              TextField(
                 maxLength: 20,
                 maxLengthEnforced: true,
                 maxLines: 1,
@@ -115,10 +115,9 @@ class Add extends State<Add_page> {
                     hintText: '入力してください', labelText: '名称'),
                 onChanged: _handleName,
               ),
-            ),
-            SingleChildScrollView(
+
               //金額の入力
-              child: TextField(
+              TextField(
                 maxLength: 7,
                 maxLengthEnforced: true,
                 maxLines: 1,
@@ -129,30 +128,30 @@ class Add extends State<Add_page> {
                     const InputDecoration(hintText: '1000', labelText: '金額'),
                 onChanged: _handleMoney,
               ),
-            ),
-            RaisedButton(
-                child: const Text("追加"),
-                color: Colors.blue,
-                onPressed: () async {
-                  //追加処理
-                  if (_payment == 'out') {
-                    _money = -_money;
-                  }
-                  Expense add = Expense(
-                      id: _id,
-                      payment: _payment,
-                      year: _Date.year,
-                      month: _Date.month,
-                      day: _Date.day,
-                      name: _name,
-                      money: _money);
+              RaisedButton(
+                  child: const Text("追加"),
+                  color: Colors.blue,
+                  onPressed: () async {
+                    //追加処理
+                    if (_payment == 'out') {
+                      _money = -_money;
+                    }
+                    Expense add = Expense(
+                        id: _id,
+                        payment: _payment,
+                        year: _Date.year,
+                        month: _Date.month,
+                        day: _Date.day,
+                        name: _name,
+                        money: _money);
 
-                  await dbInterface().insertExpense(add);
-                  _handleId();
-                  print(await dbInterface().expenses());
-                }),
-            //Text(dbInterface().expenses()['id']),
-          ],
+                    await dbInterface().insertExpense(add);
+                    _handleId();
+                    print(await dbInterface().expenses());
+                  }),
+              //Text(dbInterface().expenses()['id']),
+            ],
+          ),
         ));
   }
 }
