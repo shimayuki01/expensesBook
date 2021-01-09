@@ -92,7 +92,7 @@ class dbInterface {
     await _database.insert(
       'expenses',
       expense.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+      //conflictAlgorithm: ConflictAlgorithm.,
     );
   }
 
@@ -111,19 +111,10 @@ class dbInterface {
     });
   }
 
-  Future<List<Expense>> gatMaxId() async {
+  Future<List<int>> gatMaxId() async {
 
-      final List<Map<String, dynamic>> maps = await _database.query("expenses",orderBy: 'id');
-      return List.generate(maps.length, (i) {
-        return Expense(
-          id: maps[i]['id'],
-          year: maps[i]['year'],
-          month: maps[i]['month'],
-          day: maps[i]['day'],
-          name: maps[i]['name'],
-          money: maps[i]['money'],
-        );
-      });
+      final List<Map<String, dynamic>> maps = await _database.rawQuery('select max(id) from expenses');
+      return List.generate(1,(i)=> maps[i]['max(id)']);
 
     }
 

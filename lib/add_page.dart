@@ -22,13 +22,12 @@ class Add extends State<Add_page> {
   int _id;
 
   void _setMaxId() async {
-    List<Expense> map = await dbInterface().gatMaxId();
-    int maxid = map.length - 1;
+    List<int> map = await dbInterface().gatMaxId();
+    print("map$map");
     print(map.length);
-    print(map[maxid]);
-    print(map[maxid].id);
+    print(map[0]);
     if (map.length != 0 )
-      _id = map[maxid].id + 1;
+      _id = map[0] + 1;
     else
       _id = 1;
   }
@@ -64,7 +63,7 @@ class Add extends State<Add_page> {
 
   void initState() {
     super.initState();
-    _setMaxId();
+      _setMaxId();
     print("getmaxid");
   }
 
