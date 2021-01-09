@@ -57,7 +57,6 @@ class _MyHomePageState extends State<MyHomePage> {
       await Future.delayed((Duration(seconds: 1)));
       await dbInterface().insertExpense(test1);
     });
-
   }
 
   Widget build(BuildContext context) {
@@ -85,11 +84,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: const Text('詳細'),
                     color: Colors.lightBlue,
                     shape: const StadiumBorder(),
-                    onPressed: () {
+                    onPressed: () async{
                       //画面遷移（詳細のペ－ジ）
-                      Navigator.push(
+                      await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Detail_page()),
+                        MaterialPageRoute(builder: (context) => DetailPage()),
                       );
                     },
                   ),

@@ -1,30 +1,29 @@
 import 'package:expenses_book_app/db_interface.dart';
 import 'package:flutter/material.dart';
 
-class Detail_page extends StatefulWidget {
+class DetailPage extends StatefulWidget {
   @override
   Detail createState() => new Detail();
 }
 
-class Detail extends State<Detail_page> {
+class Detail extends State<DetailPage> {
   List<Expense> items;
 
-  void _setList() async {
+  void _getMap() async {
     List<Expense> maps = await dbInterface().expenses();
-    print(maps.length);
     items = maps;
+    print(items[0]);
   }
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
     Future(() async {
-      _setList();
-      await Future.delayed((Duration(seconds: 1)));
+      _getMap();
     });
-  }
+ }
 
   @override
   Widget build(BuildContext context) {
@@ -34,18 +33,28 @@ class Detail extends State<Detail_page> {
       ),
       body: Container(
         height: double.infinity,
-        child: ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            //収支のリスト表示
-            return ListTile(
-              leading: Text("支出"),
-              title: Text('${items[index]}'),
-              trailing: Text(""),
+        child: FutureBuilder(
+          future: _getMapLength(),
+          builder: (context,snapshot){
+            return ListView.builder(
+              itemCount: snapshot.data,
+              itemBuilder: (context, index) {
+                //収支のリスト表示
+                return ListTile(
+                  leading: Text("支出"),
+                  title: Text(items[](index)),
+                  trailing: Text("maps.length is " + snapshot.data.toString()),
+                );
+              },
             );
           },
         ),
       ),
     );
+  }
+
+  Future<int> _getMapLength() async {
+    List<Expense> maps = await dbInterface().expenses();
+    return maps.length;
   }
 }
