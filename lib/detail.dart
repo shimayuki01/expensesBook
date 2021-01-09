@@ -42,7 +42,7 @@ class Detail extends State<DetailPage> {
                 //収支のリスト表示
                 return ListTile(
                   leading: Text("支出"),
-                  title: Text(items[](index)),
+                  title: items != null ? Text("${items[index]}") : Text(""),
                   trailing: Text("maps.length is " + snapshot.data.toString()),
                 );
               },
