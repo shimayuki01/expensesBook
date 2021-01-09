@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'package:expenses_book_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -13,20 +12,17 @@ class Add_page extends StatefulWidget {
 
 class Add extends State<Add_page> {
   String _payment = 'out';
-
-  //var selectedDate = DateTime.now();
-  DateTime _Date = DateTime.now();
-
+  DateTime _date = DateTime.now();
   String _name = '';
   int _money = 0;
   int _id;
 
   void _setMaxId() async {
-    List<int> map = await dbInterface().gatMaxId();
+    List<int> map = await dbInterface().getMaxId();
     print("map$map");
     print(map.length);
     print(map[0]);
-    if (map.length != 0 )
+    if (map.length != 0)
       _id = map[0] + 1;
     else
       _id = 1;
@@ -42,7 +38,6 @@ class Add extends State<Add_page> {
     setState(() {
       _name = name;
     });
-    log("$_name");
   }
 
 //金額の変更
@@ -50,7 +45,6 @@ class Add extends State<Add_page> {
     setState(() {
       _money = int.parse(money);
     });
-    print('$_money');
   }
 
   //idのインクリメント
@@ -58,13 +52,11 @@ class Add extends State<Add_page> {
     setState(() {
       _id++;
     });
-    print('$_id');
   }
 
   void initState() {
     super.initState();
-      _setMaxId();
-    print("getmaxid");
+    _setMaxId();
   }
 
   @override
@@ -95,13 +87,13 @@ class Add extends State<Add_page> {
                     final selectedDate = await showDatePicker(
                       context: context,
                       locale: const Locale('ja'),
-                      initialDate: _Date,
+                      initialDate: _date,
                       firstDate: DateTime(DateTime.now().year - 1),
                       lastDate: DateTime(DateTime.now().year + 1),
                     );
                     if (selectedDate != null) {
                       setState(() {
-                        _Date = selectedDate;
+                        _date = selectedDate;
                         //_handleDate();
                       });
                     }
@@ -109,7 +101,7 @@ class Add extends State<Add_page> {
 
               //日付の表示
               Text(
-                DateFormat('yyyy年M月d日').format(_Date),
+                DateFormat('yyyy年M月d日').format(_date),
                 style: TextStyle(fontSize: 25),
               ),
               Text('$_id'),
@@ -130,7 +122,7 @@ class Add extends State<Add_page> {
                 maxLengthEnforced: true,
                 maxLines: 1,
                 inputFormatters: [
-                  WhitelistingTextInputFormatter(RegExp(r'[0-9]'))
+                  FilteringTextInputFormatter(RegExp(r'[0-9]'), allow: null)
                 ],
                 decoration:
                     const InputDecoration(hintText: '1000', labelText: '金額'),
@@ -146,12 +138,11 @@ class Add extends State<Add_page> {
                     }
                     Expense add = Expense(
                         id: _id,
-                        year: _Date.year,
-                        month: _Date.month,
-                        day: _Date.day,
+                        year: _date.year,
+                        month: _date.month,
+                        day: _date.day,
                         name: _name,
                         money: _money);
-
                     await dbInterface().insertExpense(add);
                     _handleId();
                     print(await dbInterface().expenses());

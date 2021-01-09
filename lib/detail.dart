@@ -12,9 +12,7 @@ class Detail extends State<DetailPage> {
   void _getMap() async {
     List<Expense> maps = await dbInterface().expenses();
     items = maps;
-    print(items[0]);
   }
-
 
   @override
   void initState() {
@@ -23,7 +21,7 @@ class Detail extends State<DetailPage> {
     Future(() async {
       _getMap();
     });
- }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,16 +33,27 @@ class Detail extends State<DetailPage> {
         height: double.infinity,
         child: FutureBuilder(
           future: _getMapLength(),
-          builder: (context,snapshot){
+          builder: (context, snapshot) {
             return ListView.builder(
               itemCount: snapshot.data,
               itemBuilder: (context, index) {
                 //収支のリスト表示
-                return ListTile(
-                  leading: Text("支出"),
-                  title: items != null ? Text("${items[index]}") : Text(""),
-                  trailing: Text("maps.length is " + snapshot.data.toString()),
-                );
+                if (items != null) {
+                  return ListTile(
+                    leading: items[index].money > 0 ? Text("収入") : Text("支出"),
+                    title: Column(
+                      children: [
+                        Text(items[index].name),
+                        Text(items[index].month.toString() +
+                            "/" +
+                            items[index].day.toString()),
+                      ],
+                    ),
+                    trailing: Text(items[index].money.toString()),
+                  );
+                } else {
+                  return Text("表示するものがありません");
+                }
               },
             );
           },
@@ -58,3 +67,23 @@ class Detail extends State<DetailPage> {
     return maps.length;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

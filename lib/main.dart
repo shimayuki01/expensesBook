@@ -3,8 +3,6 @@ import 'package:expenses_book_app/db_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'dart:async';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 import 'detail.dart';
 import 'package:flutter/widgets.dart';
 
@@ -84,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: const Text('詳細'),
                     color: Colors.lightBlue,
                     shape: const StadiumBorder(),
-                    onPressed: () async{
+                    onPressed: () async {
                       //画面遷移（詳細のペ－ジ）
                       await Navigator.push(
                         context,

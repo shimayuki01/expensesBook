@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -52,9 +51,7 @@ class dbInterface {
   }
 
   Future<Database> get database async {
-    print("initinit");
     if (_database != null) return _database;
-
     _database = await _initDatabase();
     return _database;
   }
@@ -62,7 +59,6 @@ class dbInterface {
   _initDatabase() async {
     Directory documentDirectory = await getApplicationDocumentsDirectory();
     final path = join(documentDirectory.path, "expenses_database.db");
-    print("dbinit");
 
     return await openDatabase(
       path,
@@ -80,15 +76,11 @@ class dbInterface {
   Future<void> delDb() async {
     Directory documentDirectory = await getApplicationDocumentsDirectory();
     final path = join(documentDirectory.path, "expenses_database.db");
-    print("delDb");
     await deleteDatabase(path);
-
   }
 
   //データ挿入
-  Future<void> insertExpense(Expense expense) async {
-    print("add");
-
+    Future<void> insertExpense(Expense expense) async {
     await _database.insert(
       'expenses',
       expense.toMap(),
@@ -111,11 +103,9 @@ class dbInterface {
     });
   }
 
-  Future<List<int>> gatMaxId() async {
-
+  Future<List<int>> getMaxId() async {
       final List<Map<String, dynamic>> maps = await _database.rawQuery('select max(id) from expenses');
       return List.generate(1,(i)=> maps[i]['max(id)']);
-
     }
 
   //データ更新
