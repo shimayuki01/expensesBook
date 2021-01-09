@@ -17,12 +17,21 @@ class Add extends State<Add_page> {
   //var selectedDate = DateTime.now();
   DateTime _Date = DateTime.now();
 
-  // int _year = _Date.year;
-  // int _month = _Date.month;
-  // int _day = _Date.day;
   String _name = '';
   int _money = 0;
-  int _id = 1;
+  int _id;
+
+  void _setMaxId() async {
+    List<Expense> map = await dbInterface().gatMaxId();
+    int maxid = map.length - 1;
+    print(map.length);
+    print(map[maxid]);
+    print(map[maxid].id);
+    if (map.length != 0 )
+      _id = map[maxid].id + 1;
+    else
+      _id = 1;
+  }
 
   //収支の切り替え
   void _onChanged(String payment) => setState(() {
@@ -53,11 +62,11 @@ class Add extends State<Add_page> {
     print('$_id');
   }
 
-  // void _handleDate(){
-  //    _year = _Date.year;
-  //    _monrh = _Date.month;
-  //    _day = _Date.day;
-  // }
+  void initState() {
+    super.initState();
+    _setMaxId();
+    print("getmaxid");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +147,6 @@ class Add extends State<Add_page> {
                     }
                     Expense add = Expense(
                         id: _id,
-                        payment: _payment,
                         year: _Date.year,
                         month: _Date.month,
                         day: _Date.day,

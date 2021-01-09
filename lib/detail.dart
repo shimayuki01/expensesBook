@@ -2,7 +2,12 @@ import 'package:expenses_book_app/db_interface.dart';
 import 'package:flutter/material.dart';
 
 class Detail extends StatelessWidget {
-  final List items = dbInterface().expenses() as List;
+
+  List<Expense> items;
+  void _setList() async{
+    final List<Expense> items = await dbInterface().expenses();
+  }
+
 
   @override
   Widget build(BuildContext context) {

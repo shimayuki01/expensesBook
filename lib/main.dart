@@ -47,6 +47,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
 
+  Expense test1 = Expense(
+      id: 1,
+      year: 2021,
+      month: 1,
+      day: 7,
+      name: "fafdaf",
+      money: -300);
+
+
+
+
   void initState(){
     super.initState();
     dbInterface().delDb();

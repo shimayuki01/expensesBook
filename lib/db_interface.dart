@@ -12,13 +12,11 @@ class Expense {
   final int year;
   final int month;
   final int day;
-  final String payment; //収支判別
   final String name;
   final int money;
 
   Expense(
       {this.id,
-      this.payment,
       this.year,
       this.month,
       this.day,
@@ -112,6 +110,22 @@ class dbInterface {
       );
     });
   }
+
+  Future<List<Expense>> gatMaxId() async {
+
+      final List<Map<String, dynamic>> maps = await _database.query("expenses",orderBy: 'id');
+      return List.generate(maps.length, (i) {
+        return Expense(
+          id: maps[i]['id'],
+          year: maps[i]['year'],
+          month: maps[i]['month'],
+          day: maps[i]['day'],
+          name: maps[i]['name'],
+          money: maps[i]['money'],
+        );
+      });
+
+    }
 
   //データ更新
   Future<void> updateExpense(Expense expense) async {
