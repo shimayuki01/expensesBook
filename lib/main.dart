@@ -46,22 +46,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
+  Expense test1 =
+      Expense(id: 1, year: 2021, month: 1, day: 7, name: "fafdaf", money: -300);
 
-  Expense test1 = Expense(
-      id: 1,
-      year: 2021,
-      month: 1,
-      day: 7,
-      name: "fafdaf",
-      money: -300);
-
-
-
-
-  void initState(){
+  void initState() {
     super.initState();
-    dbInterface().delDb();
-    dbInterface().init();
+    Future(() async {
+      await dbInterface().delDb();
+      dbInterface().init();
+      await Future.delayed((Duration(seconds: 1)));
+      await dbInterface().insertExpense(test1);
+    });
+
   }
 
   Widget build(BuildContext context) {
@@ -93,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       //画面遷移（詳細のペ－ジ）
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Detail()),
+                        MaterialPageRoute(builder: (context) => Detail_page()),
                       );
                     },
                   ),
