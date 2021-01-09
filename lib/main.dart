@@ -3,17 +3,12 @@ import 'package:expenses_book_app/db_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'dart:async';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 import 'detail.dart';
 import 'package:flutter/widgets.dart';
 
-
 void main() {
-    dbInterface().init();
-    runApp(MyApp());
+  runApp(MyApp());
 }
-
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -49,6 +44,19 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
+  Expense test1 =
+      Expense(id: 1, year: 2021, month: 1, day: 7, name: "fafdaf", money: -300);
+
+  void initState() {
+    super.initState();
+    Future(() async {
+      await dbInterface().delDb();
+      dbInterface().init();
+      await Future.delayed((Duration(seconds: 1)));
+      await dbInterface().insertExpense(test1);
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -74,11 +82,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: const Text('詳細'),
                     color: Colors.lightBlue,
                     shape: const StadiumBorder(),
-                    onPressed: () {
+                    onPressed: () async {
                       //画面遷移（詳細のペ－ジ）
-                      Navigator.push(
+                      await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Detail()),
+                        MaterialPageRoute(builder: (context) => DetailPage()),
                       );
                     },
                   ),

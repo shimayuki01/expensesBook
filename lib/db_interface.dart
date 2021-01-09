@@ -1,6 +1,6 @@
-import 'dart:math';
 
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'dart:io';
@@ -11,13 +11,11 @@ class Expense {
   final int year;
   final int month;
   final int day;
-  final String payment; //収支判別
   final String name;
   final int money;
 
   Expense(
       {this.id,
-      this.payment,
       this.year,
       this.month,
       this.day,
@@ -27,7 +25,7 @@ class Expense {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-     // 'payment': payment,
+      // 'payment': payment,
       'year': year,
       'month': month,
       'day': day,
@@ -45,38 +43,54 @@ class Expense {
 
 //データベースインタフェース
 class dbInterface {
+  static Database _database;
 
-  Database database;
   //データベース作成（初期化）
-  void init() async {
-    //WidgetsFlutterBinding.ensureInitialized();
-     database = await openDatabase(
-      join(await getDatabasesPath(), 'expenses_database.db'),
+  void init() async{
+    _database = await database;
+  }
+
+  Future<Database> get database async {
+    if (_database != null) return _database;
+    _database = await _initDatabase();
+    return _database;
+  }
+
+  _initDatabase() async {
+    Directory documentDirectory = await getApplicationDocumentsDirectory();
+    final path = join(documentDirectory.path, "expenses_database.db");
+
+    return await openDatabase(
+      path,
+      version: 1,
       onCreate: (db, version) {
         return db.execute(
-          //"CREATE TABLE expenses(id INTEGER PRIMARY KEY, payment TEXT,  year Integer, month Integer, day Integer, name Text, money Integer)",
           "CREATE TABLE expenses(id INTEGER PRIMARY KEY, year Integer, month Integer, day Integer, name Text, money Integer)",
         );
       },
-      version: 1,
+      onDowngrade: onDatabaseDowngradeDelete,
     );
   }
 
-  //データ挿入
-  Future<void> insertExpense(Expense expense) async {
-     final Database db = database;
+  //データベース削除
+  Future<void> delDb() async {
+    Directory documentDirectory = await getApplicationDocumentsDirectory();
+    final path = join(documentDirectory.path, "expenses_database.db");
+    await deleteDatabase(path);
+  }
 
-    await db.insert(
-      'expsenses',
+  //データ挿入
+    Future<void> insertExpense(Expense expense) async {
+    await _database.insert(
+      'expenses',
       expense.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+      //conflictAlgorithm: ConflictAlgorithm.,
     );
   }
 
   //データ表示
   Future<List<Expense>> expenses() async {
-    final Database db = database;
-    final List<Map<String, dynamic>> maps = await db.query('expenses');
+    final List<Map<String, dynamic>> maps = await _database.query("expenses");
     return List.generate(maps.length, (i) {
       return Expense(
         id: maps[i]['id'],
@@ -89,9 +103,14 @@ class dbInterface {
     });
   }
 
+  Future<List<int>> getMaxId() async {
+      final List<Map<String, dynamic>> maps = await _database.rawQuery('select max(id) from expenses');
+      return List.generate(1,(i)=> maps[i]['max(id)']);
+    }
+
   //データ更新
   Future<void> updateExpense(Expense expense) async {
-    final db = database;
+    final db = _database;
     await db.update(
       'expenses',
       expense.toMap(),
@@ -101,13 +120,11 @@ class dbInterface {
   }
 
   Future<void> deleteExpense(int id) async {
-    final db = database;
+    final db = _database;
     await db.delete(
       'expenses',
       where: "id = ?",
       whereArgs: [id],
     );
   }
-
-
 }
