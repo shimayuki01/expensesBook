@@ -10,7 +10,7 @@ class Detail extends State<DetailPage> {
   List<Expense> items;
 
   void _getMap() async {
-    List<Expense> maps = await dbInterface().expenses();
+    List<Expense> maps = await DbInterface().expenses();
     items = maps;
   }
 
@@ -63,7 +63,7 @@ class Detail extends State<DetailPage> {
   }
 
   Future<int> _getMapLength() async {
-    List<Expense> maps = await dbInterface().expenses();
+    List<Expense> maps = await DbInterface().expenses();
     return maps.length;
   }
 }

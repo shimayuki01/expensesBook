@@ -50,10 +50,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     Future(() async {
-      await dbInterface().delDb();
-      dbInterface().init();
+      await DbInterface().delDb();
+      DbInterface().init();
       await Future.delayed((Duration(seconds: 1)));
-      await dbInterface().insertExpense(test1);
+      await DbInterface().insertExpense(test1);
     });
   }
 

@@ -1,4 +1,3 @@
-
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -14,13 +13,7 @@ class Expense {
   final String name;
   final int money;
 
-  Expense(
-      {this.id,
-      this.year,
-      this.month,
-      this.day,
-      this.name,
-      this.money});
+  Expense({this.id, this.year, this.month, this.day, this.name, this.money});
 
   Map<String, dynamic> toMap() {
     return {
@@ -42,11 +35,11 @@ class Expense {
 }
 
 //データベースインタフェース
-class dbInterface {
+class DbInterface {
   static Database _database;
 
   //データベース作成（初期化）
-  void init() async{
+  void init() async {
     _database = await database;
   }
 
@@ -80,7 +73,7 @@ class dbInterface {
   }
 
   //データ挿入
-    Future<void> insertExpense(Expense expense) async {
+  Future<void> insertExpense(Expense expense) async {
     await _database.insert(
       'expenses',
       expense.toMap(),
@@ -103,10 +96,35 @@ class dbInterface {
     });
   }
 
-  Future<List<int>> getMaxId() async {
-      final List<Map<String, dynamic>> maps = await _database.rawQuery('select max(id) from expenses');
-      return List.generate(1,(i)=> maps[i]['max(id)']);
-    }
+  //id最大値取得
+  Future<int> getMaxId() async {
+    final List<Map<String, dynamic>> maps =
+        await _database.rawQuery('select max(id) from expenses');
+    List<int> map = List.generate(1, (i) => maps[i]['max(id)']);
+    if (map.length != 0)
+      return map[0] + 1;
+    else
+      return 1;
+  }
+
+  Future<Expense> getData(int id) async {
+    final db = _database;
+    List<Map<String, dynamic>> maps = await db.query(
+      'expenses',
+      where: "id = ?",
+      whereArgs: [id],
+    );
+    Expense _data = Expense(
+      id: maps[0]['id'],
+      year: maps[0]['year'],
+      month: maps[0]['month'],
+      day: maps[0]['day'],
+      name: maps[0]['name'],
+      money: maps[0]['money'],
+    );
+
+    return _data;
+  }
 
   //データ更新
   Future<void> updateExpense(Expense expense) async {

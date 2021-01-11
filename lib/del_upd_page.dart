@@ -1,27 +1,25 @@
-import 'package:expenses_book_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'db_interface.dart';
 
-class del_upd_page extends StatefulWidget {
+class DelUpdPage extends StatefulWidget {
   @override
   //idの受け渡し
   final int id;
 
   const del_upd_page({Key key, this.id}) : super(key: key);
 
-  delUpd createState() => new delUpd();
+  DelUpd createState() => new DelUpd();
 }
 
-class delUpd extends State<del_upd_page> {
-  Expense info = dbInterface().data(id);
+class DelUpd extends State<DelUpdPage> {
+  Expense info = await DbInterface().getData(id);
   String _payment = info.payment;
-  DateTime _Date = DateTime(info.year, info.month, info.day);
+  DateTime _date = DateTime(info.year, info.month, info.day);
   String _name = info.name;
   int _money = info.money;
 
-  int get id => null;
 
   //収支の切り替え
   void _onChanged(String payment) => setState(() {
@@ -56,7 +54,7 @@ class delUpd extends State<del_upd_page> {
         appBar: AppBar(title: Text("修正ページ"),
             //ゴミ箱アイコン作成
             actions: [
-              IconButton(icon: Icon(Icons.delete), onPressed: dbInterface().deleteExpense(id);Navigator.pop();),
+              IconButton(icon: Icon(Icons.delete), onPressed: DbInterface().deleteExpense(id);Navigator.pop();),
             ]),
         body: Column(
           children: [
@@ -79,13 +77,13 @@ class delUpd extends State<del_upd_page> {
                   final selectedDate = await showDatePicker(
                     context: context,
                     locale: const Locale('ja'),
-                    initialDate: _Date,
+                    initialDate: _date,
                     firstDate: DateTime(DateTime.now().year - 1),
                     lastDate: DateTime(DateTime.now().year + 1),
                   );
                   if (selectedDate != null) {
                     setState(() {
-                      _Date = selectedDate;
+                      _date = selectedDate;
                       //_handleDate();
                     });
                   }
@@ -93,7 +91,7 @@ class delUpd extends State<del_upd_page> {
 
             //日付の表示
             Text(
-              DateFormat('yyyy年M月d日').format(_Date),
+              DateFormat('yyyy年M月d日').format(_date),
               style: TextStyle(fontSize: 25),
             ),
 
@@ -113,7 +111,7 @@ class delUpd extends State<del_upd_page> {
               maxLengthEnforced: true,
               maxLines: 1,
               inputFormatters: [
-                WhitelistingTextInputFormatter(RegExp(r'[0-9]'))
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
               ],
               decoration:
                   const InputDecoration(hintText: '入力してください', labelText: '金額'),
@@ -126,14 +124,13 @@ class delUpd extends State<del_upd_page> {
                   //追加処理
                   var upd = Expense(
                       id: _id,
-                      payment: _payment,
-                      year: _Date.year,
-                      month: _Date.month,
-                      day: _Date.day,
+                      year: _date.year,
+                      month: _date.month,
+                      day: _date.day,
                       name: _name,
                       money: _money);
 
-                  await dbInterface().updateExpense(upd);
+                  await DbInterface().updateExpense(upd);
                 }),
           ],
         ));
