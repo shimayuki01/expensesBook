@@ -40,12 +40,13 @@ class Detail extends State<DetailPage> {
               itemBuilder: (context, index) {
                 //収支のリスト表示
                 if (items != null) {
-
                   return ListTile(
                     leading: Column(
                       children: [
                         items[index].money > 0 ? Text("収入") : Text("支出"),
-                        Text(items[index].month.toString() +
+                        Text(items[index].year.toString() +
+                            "/" +
+                            items[index].month.toString() +
                             "/" +
                             items[index].day.toString()),
                       ],
@@ -56,7 +57,7 @@ class Detail extends State<DetailPage> {
                       ],
                     ),
                     trailing: Text(items[index].money.toString()),
-                    onTap:() => Navigator.push(
+                    onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
