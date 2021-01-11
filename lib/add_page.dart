@@ -16,7 +16,7 @@ class Add extends State<Add_page> {
   int _money = 0;
   int _id;
 
-  void _setMaxId() async {
+  Future<void> _setMaxId() async {
     _id = await DbInterface().getMaxId();
   }
 
@@ -48,7 +48,9 @@ class Add extends State<Add_page> {
 
   void initState() {
     super.initState();
-    _setMaxId();
+    Future(() async{
+      await _setMaxId();
+    });
   }
 
   @override
@@ -139,7 +141,6 @@ class Add extends State<Add_page> {
                     _handleId();
                     print(await DbInterface().expenses());
                   }),
-              //Text(dbInterface().expenses()['id']),
             ],
           ),
         ));
