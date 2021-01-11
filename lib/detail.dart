@@ -1,4 +1,5 @@
 import 'package:expenses_book_app/db_interface.dart';
+import 'package:expenses_book_app/del_upd_page.dart';
 import 'package:flutter/material.dart';
 
 class DetailPage extends StatefulWidget {
@@ -9,7 +10,7 @@ class DetailPage extends StatefulWidget {
 class Detail extends State<DetailPage> {
   List<Expense> items;
 
-  void _getMap() async {
+  Future<void> _getMap() async {
     List<Expense> maps = await DbInterface().expenses();
     items = maps;
   }
@@ -19,7 +20,7 @@ class Detail extends State<DetailPage> {
     // TODO: implement initState
     super.initState();
     Future(() async {
-      _getMap();
+      await _getMap();
     });
   }
 
@@ -39,17 +40,27 @@ class Detail extends State<DetailPage> {
               itemBuilder: (context, index) {
                 //収支のリスト表示
                 if (items != null) {
+
                   return ListTile(
-                    leading: items[index].money > 0 ? Text("収入") : Text("支出"),
-                    title: Column(
+                    leading: Column(
                       children: [
-                        Text(items[index].name),
+                        items[index].money > 0 ? Text("収入") : Text("支出"),
                         Text(items[index].month.toString() +
                             "/" +
                             items[index].day.toString()),
                       ],
                     ),
+                    title: Column(
+                      children: [
+                        Text(items[index].name),
+                      ],
+                    ),
                     trailing: Text(items[index].money.toString()),
+                    onTap:() => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                DelUpdPage(id: items[index].id))),
                   );
                 } else {
                   return Text("表示するものがありません");
@@ -67,23 +78,3 @@ class Detail extends State<DetailPage> {
     return maps.length;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
