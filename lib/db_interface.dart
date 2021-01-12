@@ -100,7 +100,7 @@ class DbInterface {
     final List<Map<String, dynamic>> maps =
         await _database.rawQuery('select max(id) from expenses');
     List<int> map = List.generate(1, (i) => maps[i]['max(id)']);
-    if (map.length != 0)
+    if (map[0] != null)
       return map[0] + 1;
     else
       return 1;
