@@ -140,7 +140,8 @@ class Add extends State<Add_page> {
                     await DbInterface().insertExpense(add);
                     _handleId();
                     print(await DbInterface().expenses());
-                  }),
+                    Navigator.pop(context);
+                    }),
             ],
           ),
         ));
