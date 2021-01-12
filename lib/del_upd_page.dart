@@ -1,27 +1,25 @@
-import 'package:expenses_book_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'db_interface.dart';
+import 'package:intl/intl.dart';
 
-class del_upd_page extends StatefulWidget {
+class DelUpdPage extends StatefulWidget {
+  //Expenseの受け渡し
+  final Expense data;
+
+  DelUpdPage({this.data});
+
   @override
-  //idの受け渡し
-  final int id;
-
-  const del_upd_page({Key key, this.id}) : super(key: key);
-
-  delUpd createState() => new delUpd();
+  DelUpd createState() => new DelUpd();
 }
 
-class delUpd extends State<del_upd_page> {
-  Expense info = dbInterface().data(id);
-  String _payment = info.payment;
-  DateTime _Date = DateTime(info.year, info.month, info.day);
-  String _name = info.name;
-  int _money = info.money;
-
-  int get id => null;
+class DelUpd extends State<DelUpdPage> {
+  Expense _info;
+  int _id;
+  String _payment;
+  DateTime _date;
+  String _name;
+  int _money;
 
   //収支の切り替え
   void _onChanged(String payment) => setState(() {
@@ -33,7 +31,6 @@ class delUpd extends State<del_upd_page> {
     setState(() {
       _name = name;
     });
-    print('$_name');
   }
 
 //金額の変更
@@ -41,24 +38,42 @@ class delUpd extends State<del_upd_page> {
     setState(() {
       _money = int.parse(money);
     });
-    print('$_money');
   }
 
-  // void _handleDate(){
-  //    _year = _Date.year;
-  //    _monrh = _Date.month;
-  //    _day = _Date.day;
-  // }
+  //初期値を代入
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _info = widget.data;
+    _id = _info.id;
+    _date = DateTime(_info.year, _info.month, _info.day);
+    _name = _info.name;
+    if (_info.money > 0) {
+      _payment = 'in';
+      _money = _info.money;
+    } else {
+      _payment = 'out';
+      _money = -_info.money;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("修正ページ"),
-            //ゴミ箱アイコン作成
-            actions: [
-              IconButton(icon: Icon(Icons.delete), onPressed: dbInterface().deleteExpense(id);Navigator.pop();),
-            ]),
-        body: Column(
+      appBar: AppBar(title: Text("修正ページ"),
+          //ゴミ箱アイコン作成
+          actions: [
+            IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () async {
+                  await DbInterface().deleteExpense(_id);
+                  Navigator.pop(context);
+                }),
+          ]),
+
+      body: SingleChildScrollView(
+        child: Column(
           children: [
             //収支のラジオボタン
             RadioListTile(
@@ -79,13 +94,13 @@ class delUpd extends State<del_upd_page> {
                   final selectedDate = await showDatePicker(
                     context: context,
                     locale: const Locale('ja'),
-                    initialDate: _Date,
+                    initialDate: _date,
                     firstDate: DateTime(DateTime.now().year - 1),
                     lastDate: DateTime(DateTime.now().year + 1),
                   );
                   if (selectedDate != null) {
                     setState(() {
-                      _Date = selectedDate;
+                      _date = selectedDate;
                       //_handleDate();
                     });
                   }
@@ -93,49 +108,52 @@ class delUpd extends State<del_upd_page> {
 
             //日付の表示
             Text(
-              DateFormat('yyyy年M月d日').format(_Date),
+              DateFormat('yyyy年M月d日').format(_date),
               style: TextStyle(fontSize: 25),
             ),
 
             //名称の入力
-            new TextField(
+            TextFormField(
               maxLength: 20,
               maxLengthEnforced: true,
               maxLines: 1,
+              initialValue: _name,
               decoration:
                   const InputDecoration(hintText: '入力してください', labelText: '名称'),
               onChanged: _handleName,
             ),
 
             //金額の入力
-            new TextField(
+            TextFormField(
               maxLength: 7,
               maxLengthEnforced: true,
               maxLines: 1,
+              initialValue: _money.toString(),
               inputFormatters: [
-                WhitelistingTextInputFormatter(RegExp(r'[0-9]'))
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
               ],
               decoration:
                   const InputDecoration(hintText: '入力してください', labelText: '金額'),
               onChanged: _handleMoney,
             ),
             RaisedButton(
-                child: const Text("追加"),
+                child: const Text("更新"),
                 color: Colors.blue,
                 onPressed: () async {
-                  //追加処理
+                  //更新処理
                   var upd = Expense(
                       id: _id,
-                      payment: _payment,
-                      year: _Date.year,
-                      month: _Date.month,
-                      day: _Date.day,
+                      year: _date.year,
+                      month: _date.month,
+                      day: _date.day,
                       name: _name,
                       money: _money);
 
-                  await dbInterface().updateExpense(upd);
+                  await DbInterface().updateExpense(upd);
                 }),
           ],
-        ));
+        ),
+      ),
+    );
   }
 }

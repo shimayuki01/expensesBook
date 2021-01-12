@@ -1,4 +1,5 @@
 import 'package:expenses_book_app/db_interface.dart';
+import 'package:expenses_book_app/del_upd_page.dart';
 import 'package:flutter/material.dart';
 
 class DetailPage extends StatefulWidget {
@@ -9,8 +10,8 @@ class DetailPage extends StatefulWidget {
 class Detail extends State<DetailPage> {
   List<Expense> items;
 
-  void _getMap() async {
-    List<Expense> maps = await dbInterface().expenses();
+  Future<void> _getMap() async {
+    List<Expense> maps = await DbInterface().expenses();
     items = maps;
   }
 
@@ -19,7 +20,7 @@ class Detail extends State<DetailPage> {
     // TODO: implement initState
     super.initState();
     Future(() async {
-      _getMap();
+      await _getMap();
     });
   }
 
@@ -40,16 +41,27 @@ class Detail extends State<DetailPage> {
                 //収支のリスト表示
                 if (items != null) {
                   return ListTile(
-                    leading: items[index].money > 0 ? Text("収入") : Text("支出"),
-                    title: Column(
+                    leading: Column(
                       children: [
-                        Text(items[index].name),
-                        Text(items[index].month.toString() +
+                        items[index].money > 0 ? Text("収入") : Text("支出"),
+                        Text(items[index].year.toString() +
+                            "/" +
+                            items[index].month.toString() +
                             "/" +
                             items[index].day.toString()),
                       ],
                     ),
+                    title: Column(
+                      children: [
+                        Text(items[index].name),
+                      ],
+                    ),
                     trailing: Text(items[index].money.toString()),
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                DelUpdPage(data: items[index]))),
                   );
                 } else {
                   return Text("表示するものがありません");
@@ -63,27 +75,7 @@ class Detail extends State<DetailPage> {
   }
 
   Future<int> _getMapLength() async {
-    List<Expense> maps = await dbInterface().expenses();
+    List<Expense> maps = await DbInterface().expenses();
     return maps.length;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -17,15 +16,8 @@ class Add extends State<Add_page> {
   int _money = 0;
   int _id;
 
-  void _setMaxId() async {
-    List<int> map = await dbInterface().getMaxId();
-    print("map$map");
-    print(map.length);
-    print(map[0]);
-    if (map.length != 0)
-      _id = map[0] + 1;
-    else
-      _id = 1;
+  Future<void> _setMaxId() async {
+    _id = await DbInterface().getMaxId();
   }
 
   //収支の切り替え
@@ -56,7 +48,9 @@ class Add extends State<Add_page> {
 
   void initState() {
     super.initState();
-    _setMaxId();
+    Future(() async{
+      await _setMaxId();
+    });
   }
 
   @override
@@ -122,7 +116,7 @@ class Add extends State<Add_page> {
                 maxLengthEnforced: true,
                 maxLines: 1,
                 inputFormatters: [
-                  FilteringTextInputFormatter(RegExp(r'[0-9]'), allow: null)
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
                 ],
                 decoration:
                     const InputDecoration(hintText: '1000', labelText: '金額'),
@@ -143,11 +137,11 @@ class Add extends State<Add_page> {
                         day: _date.day,
                         name: _name,
                         money: _money);
-                    await dbInterface().insertExpense(add);
+                    await DbInterface().insertExpense(add);
                     _handleId();
-                    print(await dbInterface().expenses());
-                  }),
-              //Text(dbInterface().expenses()['id']),
+                    print(await DbInterface().expenses());
+                    Navigator.pop(context);
+                    }),
             ],
           ),
         ));
