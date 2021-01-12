@@ -18,7 +18,6 @@ class Expense {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      // 'payment': payment,
       'year': year,
       'month': month,
       'day': day,
@@ -29,7 +28,6 @@ class Expense {
 
   @override
   String toString() {
-    //return 'Expense{id: $id, /*payment: $payment, year: $year, month: $month, day: $day, name: $name, money: $money}';
     return 'Expense{id: $id, year: $year, month: $month, day: $day, name: $name, money: $money}';
   }
 }
