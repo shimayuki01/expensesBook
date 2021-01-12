@@ -10,9 +10,9 @@ class DetailPage extends StatefulWidget {
 class Detail extends State<DetailPage> {
   List<Expense> items;
 
-  Future<void> _getMap() async {
+  Future<List<Expense>> _getMap() async {
     List<Expense> maps = await DbInterface().expenses();
-    items = maps;
+    return maps;
   }
 
   @override
@@ -33,41 +33,45 @@ class Detail extends State<DetailPage> {
       body: Container(
         height: double.infinity,
         child: FutureBuilder(
-          future: _getMapLength(),
+          future: _getMap(),
           builder: (context, snapshot) {
-            return ListView.builder(
-              itemCount: snapshot.data,
-              itemBuilder: (context, index) {
-                //収支のリスト表示
-                if (items != null) {
-                  return ListTile(
-                    leading: Column(
-                      children: [
-                        items[index].money > 0 ? Text("収入") : Text("支出"),
-                        Text(items[index].year.toString() +
-                            "/" +
-                            items[index].month.toString() +
-                            "/" +
-                            items[index].day.toString()),
-                      ],
-                    ),
-                    title: Column(
-                      children: [
-                        Text(items[index].name),
-                      ],
-                    ),
-                    trailing: Text(items[index].money.toString()),
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                DelUpdPage(data: items[index]))),
-                  );
-                } else {
-                  return Text("表示するものがありません");
-                }
-              },
-            );
+            if (snapshot.data != null) {
+              items = snapshot.data;
+              return ListView.builder(
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    //収支のリスト表示
+                    return ListTile(
+                      leading: Column(
+                        children: [
+                          items[index].money > 0 ? Text("収入") : Text("支出"),
+                          Text(items[index].year.toString() +
+                              "/" +
+                              items[index].month.toString() +
+                              "/" +
+                              items[index].day.toString()),
+                        ],
+                      ),
+                      title: Column(
+                        children: [
+                          Text(items[index].name),
+                        ],
+                      ),
+                      trailing: Text(items[index].money.toString()),
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  DelUpdPage(data: items[index]))),
+                    );
+                  });
+            } else {
+              return Column(
+                children: [
+                  Text("表示するものがありません"),
+                ],
+              );
+            }
           },
         ),
       ),
@@ -79,3 +83,4 @@ class Detail extends State<DetailPage> {
     return maps.length;
   }
 }
+
