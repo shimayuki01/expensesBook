@@ -61,7 +61,7 @@ class Detail extends State<DetailPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                DelUpdPage(id: items[index].id))),
+                                DelUpdPage(data: items[index]))),
                   );
                 } else {
                   return Text("表示するものがありません");
