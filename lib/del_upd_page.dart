@@ -4,7 +4,7 @@ import 'db_interface.dart';
 import 'package:intl/intl.dart';
 
 class DelUpdPage extends StatefulWidget {
-  //idの受け渡し
+  //Expenseの受け渡し
   final Expense data;
 
   DelUpdPage({this.data});
@@ -21,13 +21,6 @@ class DelUpd extends State<DelUpdPage> {
   String _name;
   int _money;
 
-  //初期値を代入
-  Future<DateTime> _setDateTimeData(int id) async {
-    Expense info = await DbInterface().getData(id);
-    DateTime date = DateTime(info.year, info.month, info.day);
-    return date;
-  }
-
   //収支の切り替え
   void _onChanged(String payment) => setState(() {
         _payment = payment;
@@ -38,7 +31,6 @@ class DelUpd extends State<DelUpdPage> {
     setState(() {
       _name = name;
     });
-    print('$_name');
   }
 
 //金額の変更
@@ -46,9 +38,9 @@ class DelUpd extends State<DelUpdPage> {
     setState(() {
       _money = int.parse(money);
     });
-    print('$_money');
   }
 
+  //初期値を代入
   @override
   void initState() {
     // TODO: implement initState
@@ -57,10 +49,10 @@ class DelUpd extends State<DelUpdPage> {
     _id = _info.id;
     _date = DateTime(_info.year, _info.month, _info.day);
     _name = _info.name;
-    if(_info.money > 0 ){
+    if (_info.money > 0) {
       _payment = 'in';
       _money = _info.money;
-    }else{
+    } else {
       _payment = 'out';
       _money = -_info.money;
     }
@@ -79,94 +71,89 @@ class DelUpd extends State<DelUpdPage> {
                   Navigator.pop(context);
                 }),
           ]),
-      // body: FutureBuilder(
-      //     future: _setDateTimeData(_id),
-      //     builder: (context, snapshot) {
-      //       if(snapshot != null) {
-      //         _date = snapshot.data;
-        //      return
-        body: Column(
-                children: [
-                  //収支のラジオボタン
-                  RadioListTile(
-                      title: Text('収入'),
-                      value: 'in',
-                      groupValue: _payment,
-                      onChanged: _onChanged),
-                  RadioListTile(
-                      title: Text('支出'),
-                      value: 'out',
-                      groupValue: _payment,
-                      onChanged: _onChanged),
 
-                  //日付の入力
-                  IconButton(
-                      icon: Icon(Icons.calendar_today),
-                      onPressed: () async {
-                        final selectedDate = await showDatePicker(
-                          context: context,
-                          locale: const Locale('ja'),
-                          initialDate: _date,
-                          firstDate: DateTime(DateTime.now().year - 1),
-                          lastDate: DateTime(DateTime.now().year + 1),
-                        );
-                        if (selectedDate != null) {
-                          setState(() {
-                            _date = selectedDate;
-                            //_handleDate();
-                          });
-                        }
-                      }),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            //収支のラジオボタン
+            RadioListTile(
+                title: Text('収入'),
+                value: 'in',
+                groupValue: _payment,
+                onChanged: _onChanged),
+            RadioListTile(
+                title: Text('支出'),
+                value: 'out',
+                groupValue: _payment,
+                onChanged: _onChanged),
 
-                  //日付の表示
-                  Text(
-                    DateFormat('yyyy年M月d日').format(_date),
-                    style: TextStyle(fontSize: 25),
-                  ),
+            //日付の入力
+            IconButton(
+                icon: Icon(Icons.calendar_today),
+                onPressed: () async {
+                  final selectedDate = await showDatePicker(
+                    context: context,
+                    locale: const Locale('ja'),
+                    initialDate: _date,
+                    firstDate: DateTime(DateTime.now().year - 1),
+                    lastDate: DateTime(DateTime.now().year + 1),
+                  );
+                  if (selectedDate != null) {
+                    setState(() {
+                      _date = selectedDate;
+                      //_handleDate();
+                    });
+                  }
+                }),
 
-                  //名称の入力
-                  new TextField(
-                    maxLength: 20,
-                    maxLengthEnforced: true,
-                    maxLines: 1,
-                    decoration: const InputDecoration(
-                        hintText: '入力してください', labelText: '名称'),
-                    onChanged: _handleName,
-                  ),
+            //日付の表示
+            Text(
+              DateFormat('yyyy年M月d日').format(_date),
+              style: TextStyle(fontSize: 25),
+            ),
 
-                  //金額の入力
-                  new TextField(
-                    maxLength: 7,
-                    maxLengthEnforced: true,
-                    maxLines: 1,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
-                    ],
-                    decoration: const InputDecoration(
-                        hintText: '入力してください', labelText: '金額'),
-                    onChanged: _handleMoney,
-                  ),
-                  // RaisedButton(
-                  //     child: const Text("追加"),
-                  //     color: Colors.blue,
-                  //     onPressed: () async {
-                  //       //追加処理
-                  //       var upd = Expense(
-                  //           id: _id,
-                  //           year: _date.year,
-                  //           month: _date.month,
-                  //           day: _date.day,
-                  //           name: _name,
-                  //           money: _money);
-                  //
-                  //       await DbInterface().updateExpense(upd);
-                  //     }),
-                ],
-              ),
-            // }else{
-            //   return Text("データが取得できませんでした");
-            // }
+            //名称の入力
+            TextFormField(
+              maxLength: 20,
+              maxLengthEnforced: true,
+              maxLines: 1,
+              initialValue: _name,
+              decoration:
+                  const InputDecoration(hintText: '入力してください', labelText: '名称'),
+              onChanged: _handleName,
+            ),
 
+            //金額の入力
+            TextFormField(
+              maxLength: 7,
+              maxLengthEnforced: true,
+              maxLines: 1,
+              initialValue: _money.toString(),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+              ],
+              decoration:
+                  const InputDecoration(hintText: '入力してください', labelText: '金額'),
+              onChanged: _handleMoney,
+            ),
+            RaisedButton(
+                child: const Text("更新"),
+                color: Colors.blue,
+                onPressed: () async {
+                  //更新処理
+                  var upd = Expense(
+                      id: _id,
+                      year: _date.year,
+                      month: _date.month,
+                      day: _date.day,
+                      name: _name,
+                      money: _money);
+
+                  await DbInterface().updateExpense(upd);
+                }),
+          ],
+        ),
+      ),
     );
   }
 }
