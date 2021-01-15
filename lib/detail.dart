@@ -1,6 +1,8 @@
 import 'package:expenses_book_app/db_interface.dart';
 import 'package:expenses_book_app/del_upd_page.dart';
+import 'package:expenses_book_app/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/all.dart';
 
 class DetailPage extends StatefulWidget {
   @override
@@ -9,7 +11,6 @@ class DetailPage extends StatefulWidget {
 
 class Detail extends State<DetailPage> {
   List<Expense> items;
-
 
   Future<List<Expense>> _getMap() async {
     List<Expense> maps = await DbInterface().expenses();
@@ -24,11 +25,10 @@ class Detail extends State<DetailPage> {
       ),
       body: Container(
         height: double.infinity,
-        child: FutureBuilder(
-          future: _getMap(),
-          builder: (context, snapshot) {
-            if (snapshot.data != null) {
-              items = snapshot.data;
+        child: Consumer(
+          builder: (context, watch, child) {
+            items = watch(listProvider).listExpense;
+            if (items != null) {
               return ListView.builder(
                   itemCount: items.length,
                   itemBuilder: (context, index) {
@@ -69,6 +69,4 @@ class Detail extends State<DetailPage> {
       ),
     );
   }
-
 }
-

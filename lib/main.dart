@@ -60,6 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
       DbInterface().init();
       await Future.delayed((Duration(seconds: 1)));
       await DbInterface().insertExpense(test1);
+      await context.read(listProvider).getList();
     });
   }
 
