@@ -1,13 +1,19 @@
 import 'package:expenses_book_app/add_page.dart';
 import 'package:expenses_book_app/db_interface.dart';
+import 'package:expenses_book_app/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/all.dart';
 import 'dart:async';
 import 'detail.dart';
 import 'package:flutter/widgets.dart';
 
+final listProvider = ChangeNotifierProvider(
+  (ref) => DbListReload(),
+);
+
 void main() {
-  runApp(MyApp());
+  runApp(ProviderScope(child:MyApp()));
 }
 
 class MyApp extends StatelessWidget {

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'db_interface.dart';
 import 'package:intl/intl.dart';
+import 'package:expenses_book_app/main.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+
 
 class DelUpdPage extends StatefulWidget {
   //Expenseの受け渡し
@@ -68,6 +72,7 @@ class DelUpd extends State<DelUpdPage> {
                 icon: Icon(Icons.delete),
                 onPressed: () async {
                   await DbInterface().deleteExpense(_id);
+                  await context.read(listProvider).getList();
                   Navigator.pop(context);
                 }),
           ]),
