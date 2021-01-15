@@ -3,16 +3,14 @@ import 'package:expenses_book_app/db_interface.dart';
 
 class DbListReload extends ChangeNotifier {
 
-  List<Expense> _monthExpense = [];
+  List<Expense> monthExpense = [];
+  List<Expense> get listExpense => monthExpense;
 
-  List<Expense> get listExpense => _monthExpense;
-
-  DbListReload() {
-    getList();
-  }
 
   Future<void> getList() async {
-    _monthExpense = await DbInterface().expenses();
+    monthExpense = await DbInterface().expenses();
+    print("getLsit");
+    print(monthExpense);
     notifyListeners();
   }
 }

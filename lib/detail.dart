@@ -10,18 +10,10 @@ class DetailPage extends StatefulWidget {
 class Detail extends State<DetailPage> {
   List<Expense> items;
 
+
   Future<List<Expense>> _getMap() async {
     List<Expense> maps = await DbInterface().expenses();
     return maps;
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    Future(() async {
-      await _getMap();
-    });
   }
 
   @override
@@ -78,9 +70,5 @@ class Detail extends State<DetailPage> {
     );
   }
 
-  Future<int> _getMapLength() async {
-    List<Expense> maps = await DbInterface().expenses();
-    return maps.length;
-  }
 }
 

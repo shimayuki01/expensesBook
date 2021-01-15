@@ -1,3 +1,4 @@
+import 'package:expenses_book_app/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'db_interface.dart';
