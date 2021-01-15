@@ -72,7 +72,6 @@ class DbInterface {
 
   //データ挿入
   Future<void> insertExpense(Expense expense) async {
-    print("add");
     await _database.insert(
       'expenses',
       expense.toMap(),
@@ -112,24 +111,12 @@ class DbInterface {
   }
 
   Future<Expense> getData(int id) async {
-    print("getdata");
-    print(id);
     List<Map<String, dynamic>> maps = await _database.query(
       'expenses',
       where: "id = ?",
       whereArgs: [id],
     );
-    print(maps);
-    // return List.generate(maps.length, (i) {
-    //   return Expense(
-    //     id: maps[i]['id'],
-    //     year: maps[i]['year'],
-    //     month: maps[i]['month'],
-    //     day: maps[i]['day'],
-    //     name: maps[i]['name'],
-    //     money: maps[i]['money'],
-    //   );
-    // });
+
     Expense _data = Expense(
       id: maps[0]['id'],
       year: maps[0]['year'],
@@ -138,7 +125,6 @@ class DbInterface {
       name: maps[0]['name'],
       money: maps[0]['money'],
     );
-
     return _data;
   }
 
