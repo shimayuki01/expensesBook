@@ -5,22 +5,20 @@ import 'db_interface.dart';
 import 'main.dart';
 import 'package:flutter_riverpod/all.dart';
 
-
-// ignore: camel_case_types
-class Add_page extends StatefulWidget {
+class AddPage extends StatefulWidget {
   @override
   Add createState() => new Add();
 }
 
-class Add extends State<Add_page> {
+class Add extends State<AddPage> {
   String _payment = 'out';
   DateTime _date = DateTime.now();
   String _name = '';
   int _money = 0;
   int _id;
 
-  Future<void> _setMaxId() async {
-    _id = await DbInterface().getMaxId();
+  Future<int> _setMaxId() async {
+    return await DbInterface().getMaxId();
   }
 
   //収支の切り替え
@@ -51,7 +49,7 @@ class Add extends State<Add_page> {
 
   void initState() {
     super.initState();
-    Future(() async{
+    Future(() async {
       await _setMaxId();
     });
   }
@@ -62,93 +60,98 @@ class Add extends State<Add_page> {
         appBar: AppBar(
           title: Text("追加ページ"),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              //収支のラジオボタン
-              RadioListTile(
-                  title: Text('収入'),
-                  value: 'in',
-                  groupValue: _payment,
-                  onChanged: _onChanged),
-              RadioListTile(
-                  title: Text('支出'),
-                  value: 'out',
-                  groupValue: _payment,
-                  onChanged: _onChanged),
+        body: FutureBuilder(
+            future: _setMaxId(),
+            builder: (context, snapshot) {
+              _id = snapshot.data;
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    //収支のラジオボタン
+                    RadioListTile(
+                        title: Text('収入'),
+                        value: 'in',
+                        groupValue: _payment,
+                        onChanged: _onChanged),
+                    RadioListTile(
+                        title: Text('支出'),
+                        value: 'out',
+                        groupValue: _payment,
+                        onChanged: _onChanged),
 
-              //日付の入力
-              IconButton(
-                  icon: Icon(Icons.calendar_today),
-                  onPressed: () async {
-                    final selectedDate = await showDatePicker(
-                      context: context,
-                      locale: const Locale('ja'),
-                      initialDate: _date,
-                      firstDate: DateTime(DateTime.now().year - 1),
-                      lastDate: DateTime(DateTime.now().year + 1),
-                    );
-                    if (selectedDate != null) {
-                      setState(() {
-                        _date = selectedDate;
-                        //_handleDate();
-                      });
-                    }
-                  }),
+                    //日付の入力
+                    IconButton(
+                        icon: Icon(Icons.calendar_today),
+                        onPressed: () async {
+                          final selectedDate = await showDatePicker(
+                            context: context,
+                            locale: const Locale('ja'),
+                            initialDate: _date,
+                            firstDate: DateTime(DateTime.now().year - 1),
+                            lastDate: DateTime(DateTime.now().year + 1),
+                          );
+                          if (selectedDate != null) {
+                            setState(() {
+                              _date = selectedDate;
+                              //_handleDate();
+                            });
+                          }
+                        }),
 
-              //日付の表示
-              Text(
-                DateFormat('yyyy年M月d日').format(_date),
-                style: TextStyle(fontSize: 25),
-              ),
-              Text('$_id'),
+                    //日付の表示
+                    Text(
+                      DateFormat('yyyy年M月d日').format(_date),
+                      style: TextStyle(fontSize: 25),
+                    ),
+                    Text('$_id'),
 
-              //名称の入力
-              TextField(
-                maxLength: 20,
-                maxLengthEnforced: true,
-                maxLines: 1,
-                decoration: const InputDecoration(
-                    hintText: '入力してください', labelText: '名称'),
-                onChanged: _handleName,
-              ),
+                    //名称の入力
+                    TextField(
+                      maxLength: 20,
+                      maxLengthEnforced: true,
+                      maxLines: 1,
+                      decoration: const InputDecoration(
+                          hintText: '入力してください', labelText: '名称'),
+                      onChanged: _handleName,
+                    ),
 
-              //金額の入力
-              TextField(
-                maxLength: 7,
-                maxLengthEnforced: true,
-                maxLines: 1,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
-                ],
-                decoration:
-                    const InputDecoration(hintText: '1000', labelText: '金額'),
-                onChanged: _handleMoney,
-              ),
-              RaisedButton(
-                  child: const Text("追加"),
-                  color: Colors.blue,
-                  onPressed: () async {
-                    //追加処理
-                    if (_payment == 'out') {
-                      _money = -_money;
-                    }
-                    Expense add = Expense(
-                        id: _id,
-                        year: _date.year,
-                        month: _date.month,
-                        day: _date.day,
-                        name: _name,
-                        money: _money);
-                    await DbInterface().insertExpense(add);
-                    _handleId();
-                    print(await DbInterface().expenses());
-                    await context.read(listProvider).getList();
+                    //金額の入力
+                    TextField(
+                      maxLength: 7,
+                      maxLengthEnforced: true,
+                      maxLines: 1,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+                      ],
+                      decoration: const InputDecoration(
+                          hintText: '1000', labelText: '金額'),
+                      onChanged: _handleMoney,
+                    ),
+                    RaisedButton(
+                        child: const Text("追加"),
+                        color: Colors.blue,
+                        onPressed: () async {
+                          //追加処理
+                          if (_payment == 'out') {
+                            _money = -_money;
+                          }
+                          Expense add = Expense(
+                              id: _id,
+                              year: _date.year,
+                              month: _date.month,
+                              day: _date.day,
+                              name: _name,
+                              money: _money);
+                          await DbInterface().insertExpense(add);
+                          _handleId();
+                          print(await DbInterface().expenses());
+                          await context.read(listProvider).getList();
 
-                    Navigator.pop(context);
-                    }),
-            ],
-          ),
-        ));
+                          Navigator.pop(context);
+                        }),
+                  ],
+                ),
+              );
+            }));
   }
 }

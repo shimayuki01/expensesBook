@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
           //画面遷移（追加のページ）
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => Add_page()),
+            MaterialPageRoute(builder: (context) => AddPage()),
           );
         },
         child: Icon(Icons.add),
