@@ -58,10 +58,8 @@ class Detail extends State<DetailPage> {
                     );
                   });
             } else {
-              return Column(
-                children: [
-                  Text("表示するものがありません"),
-                ],
+              return Center(
+                child: Text("表示するものがありません"),
               );
             }
           },
