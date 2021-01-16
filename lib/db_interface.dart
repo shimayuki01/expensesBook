@@ -1,7 +1,6 @@
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'dart:async';
 import 'dart:io';
 
 //データベースに格納するクラス作成
@@ -32,12 +31,29 @@ class Expense {
   }
 }
 
+class MonthData {
+  int income;
+  int outgo;
+  int sum;
+
+  MonthData(int come, int out) {
+    this.income = come;
+    this.outgo = -out;
+    sum = this.income - this.outgo;
+  }
+
+  @override
+  String toString() {
+    return 'in: $income, out: $outgo, sum: $sum';
+  }
+}
+
 //データベースインタフェース
 class DbInterface {
   static Database _database;
 
   //データベース作成（初期化）
-  void init() async {
+  Future<void> init() async {
     _database = await database;
   }
 
@@ -82,7 +98,7 @@ class DbInterface {
   //データ表示
   Future<List<Expense>> expenses() async {
     final List<Map<String, dynamic>> maps = await _database.query("expenses");
-    if(maps.length != 0) {
+    if (maps.length != 0) {
       return List.generate(maps.length, (i) {
         return Expense(
           id: maps[i]['id'],
@@ -93,10 +109,29 @@ class DbInterface {
           money: maps[i]['money'],
         );
       });
-    }else{
+    } else {
       return null;
     }
+  }
 
+  Future<MonthData> monthExpense(int year, int month) async {
+    final List<Map<String, dynamic>> income = await _database.rawQuery(
+        'select sum(money) from expenses where year = ? and month = ? and money > 0',
+        [year.toString(), month.toString()]);
+    final List<Map<String, dynamic>> outgo = await _database.rawQuery(
+        'select sum(money) from expenses where year = ? and month = ? and money < 0',
+        [year.toString(), month.toString()]);
+    int come = 0;
+    int out = 0;
+
+
+    if (income[0]['sum(money)'] != null) come = income[0]['sum(money)'];
+
+    if (outgo[0]['sum(money)'] != null) out = outgo[0]['sum(money)'];
+
+    MonthData _month = MonthData(come, out);
+
+    return _month;
   }
 
   //id最大値取得

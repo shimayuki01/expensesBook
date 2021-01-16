@@ -11,9 +11,12 @@ import 'package:flutter/widgets.dart';
 final listProvider = ChangeNotifierProvider(
   (ref) => DbListReload(),
 );
+final monthDataProvider = ChangeNotifierProvider(
+  (ref) => MonthDataReload(),
+);
 
 void main() {
-  runApp(ProviderScope(child:MyApp()));
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -49,60 +52,92 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  @override
   Expense test1 =
       Expense(id: 1, year: 2021, month: 1, day: 7, name: "fafdaf", money: -300);
 
-  void initState() {
-    super.initState();
-    Future(() async {
-      await DbInterface().delDb();
-      DbInterface().init();
-      await Future.delayed((Duration(seconds: 1)));
-      await DbInterface().insertExpense(test1);
-      await context.read(listProvider).getList();
-    });
+  MonthData _monthData;
+
+  Future<void> _init() async {
+
   }
+
+  Future<MonthData> _getdata() async {
+    await DbInterface().init();
+    await context.read(listProvider).getList();
+
+    int _year = DateTime.now().year;
+    int _month = DateTime.now().month;
+
+    MonthData aa = await DbInterface().monthExpense(_year, _month);
+    print("aa $aa");
+    return aa;
+  }
+
+
 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 150),
-        child: Container(
-          child: ListView(
-            children: <Widget>[
-              ListTile(
-                title: Text('今月の支出'),
-                trailing: Text('sumout'),
-              ),
-              ListTile(
-                title: Text('今月の収入'),
-                trailing: Text('sumin'),
-              ),
-              ListTile(
-                title: Container(
-                  width: 50,
-                  child: RaisedButton(
-                    child: const Text('詳細'),
-                    color: Colors.lightBlue,
-                    shape: const StadiumBorder(),
-                    onPressed: () async {
-                      //画面遷移（詳細のペ－ジ）
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => DetailPage()),
+      body:
+      //FutureBuilder(
+      //     future: _init(),
+      //     builder: (context, ddd) {
+      //       return
+              FutureBuilder(
+                future: _getdata(),
+                builder: (context, snapshot) {
+                  if (snapshot.data != null) {
+                    _monthData = snapshot.data;
+                    return Consumer(builder: (context, watch, child) {
+                      if (watch(monthDataProvider).monthData != null)
+                        _monthData = watch(monthDataProvider).monthData;
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 150),
+                        child: Container(
+                          child: ListView(
+                            children: <Widget>[
+                              ListTile(
+                                title: Text('今月の支出'),
+                                trailing: Text(_monthData.outgo.toString()),
+                              ),
+                              ListTile(
+                                title: Text('今月の収入'),
+                                trailing: Text(_monthData.income.toString()),
+                              ),
+                              ListTile(
+                                title: Text('計'),
+                                trailing: Text(_monthData.sum.toString()),
+                              ),
+                              ListTile(
+                                title: Container(
+                                  width: 50,
+                                  child: RaisedButton(
+                                    child: const Text('詳細'),
+                                    color: Colors.lightBlue,
+                                    shape: const StadiumBorder(),
+                                    onPressed: () async {
+                                      //画面遷移（詳細のペ－ジ）
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => DetailPage()),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+                    });
+                  } else {
+                    return Text("era");
+                  }
+                }),
+
 
       floatingActionButton: FloatingActionButton(
         onPressed: () {

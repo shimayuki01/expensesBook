@@ -74,6 +74,7 @@ class DelUpd extends State<DelUpdPage> {
                 onPressed: () async {
                   await DbInterface().deleteExpense(_id);
                   await context.read(listProvider).getList();
+                  await context.read(monthDataProvider).getMonthData(_date.year, _date.month);
                   Navigator.pop(context);
                 }),
           ]),
@@ -156,6 +157,9 @@ class DelUpd extends State<DelUpdPage> {
                       money: _money);
 
                   await DbInterface().updateExpense(upd);
+                  await context.read(listProvider).getList();
+                  await context.read(monthDataProvider).getMonthData(_date.year, _date.month);
+                  
                 }),
           ],
         ),
