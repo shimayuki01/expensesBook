@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'db_interface.dart';
+import 'main.dart';
+import 'package:flutter_riverpod/all.dart';
+
 
 // ignore: camel_case_types
 class Add_page extends StatefulWidget {
@@ -140,6 +143,8 @@ class Add extends State<Add_page> {
                     await DbInterface().insertExpense(add);
                     _handleId();
                     print(await DbInterface().expenses());
+                    await context.read(listProvider).getList();
+
                     Navigator.pop(context);
                     }),
             ],
