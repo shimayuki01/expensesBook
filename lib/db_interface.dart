@@ -48,7 +48,7 @@ class MonthData {
 
   @override
   String toString() {
-    return 'in: $income, out: $outgo, sum: $sum';
+    return 'year: $year month: $month in: $income, out: $outgo, sum: $sum';
   }
 }
 
@@ -122,7 +122,8 @@ class DbInterface {
   Future<List<Expense>> monthExpenses(int year, int month) async {
     final List<Map<String, dynamic>> maps = await _database.query("expenses",
         where: "year = ? and month = ?",
-        whereArgs: [year.toString(), month.toString()],orderBy: "day");
+        whereArgs: [year.toString(), month.toString()],
+        orderBy: "day");
     if (maps.length != 0) {
       return List.generate(maps.length, (i) {
         return Expense(
@@ -164,18 +165,19 @@ class DbInterface {
     List<MonthData> msl;
     int _year = DateTime.now().year;
     int _month = DateTime.now().month;
-    for(int i; i < 12; i++){
-      if(_month == 1){
-        _year -= 1;
+    for (int i = 0; i < 12; i++) {
+      if (_month == 1) {
+        _year = _year - 1;
         _month = 12;
       }
       msl[i] = await monthSum(_year, _month);
+      _month = _month - 1;
     }
-
+    print("msl$msl");
     return msl;
   }
 
-    //id最大値取得
+  //id最大値取得
   Future<int> getMaxId() async {
     final List<Map<String, dynamic>> maps =
         await _database.rawQuery('select max(id) from expenses');

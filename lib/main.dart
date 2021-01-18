@@ -1,5 +1,6 @@
 import 'package:expenses_book_app/add_page.dart';
 import 'package:expenses_book_app/db_interface.dart';
+import 'package:expenses_book_app/month_sum_list.dart';
 import 'package:expenses_book_app/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -14,6 +15,9 @@ final listProvider = ChangeNotifierProvider(
 final thisMonthProvider = ChangeNotifierProvider(
   (ref) => ThisMonthReload(),
 );
+final pastMonthProvider = ChangeNotifierProvider(
+  (ref) => PastSumData(),
+);
 
 void main() {
   runApp(ProviderScope(child: MyApp()));
@@ -26,7 +30,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.grey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: MyHomePage(title: '家計簿アプリ'),
@@ -60,31 +64,25 @@ class _MyHomePageState extends State<MyHomePage> {
   int _month = DateTime.now().month;
 
   Future<void> _init() async {
-
+    await DbInterface().init();
+    await context.read(listProvider).getList(_year, _month);
+    await context.read(pastMonthProvider).getList();
   }
 
   Future<MonthData> _getData() async {
-
-    await DbInterface().init();
-    await context.read(listProvider).getList(_year, _month);
-    MonthData aa = await DbInterface().monthSum(_year, _month);
-    print("aa $aa");
+    MonthData aa = await DbInterface().monthSum(2020, 9);
     return aa;
   }
-
-
 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body:
-      //FutureBuilder(
-      //     future: _init(),
-      //     builder: (context, ddd) {
-      //       return
-              FutureBuilder(
+      body: FutureBuilder(
+          future: _init(),
+          builder: (context, ddd) {
+            return FutureBuilder(
                 future: _getData(),
                 builder: (context, snapshot) {
                   if (snapshot.data != null) {
@@ -114,17 +112,32 @@ class _MyHomePageState extends State<MyHomePage> {
                                   width: 50,
                                   child: RaisedButton(
                                     child: const Text('詳細'),
-                                    color: Colors.lightBlue,
+                                    color: Colors.blue,
                                     shape: const StadiumBorder(),
                                     onPressed: () async {
                                       //画面遷移（詳細のペ－ジ）
                                       await Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => DetailPage(year: _year, month: _month)),
+                                            builder: (context) => DetailPage(
+                                                year: _year, month: _month)),
                                       );
                                     },
                                   ),
+                                ),
+                              ),
+                              ListTile(
+                                title: RaisedButton(
+                                  child: Text('過去の履歴'),
+                                  color: Colors.cyanAccent,
+                                  shape: const StadiumBorder(),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                PastListPage()));
+                                  },
                                 ),
                               ),
                             ],
@@ -135,8 +148,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   } else {
                     return Text("era");
                   }
-                }),
-
+                });
+          }),
 
       floatingActionButton: FloatingActionButton(
         onPressed: () {
