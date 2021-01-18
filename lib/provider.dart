@@ -6,20 +6,32 @@ class DbListReload extends ChangeNotifier {
 
   List<Expense> get listExpense => monthExpense;
 
-  Future<void> getList() async {
-    monthExpense = await DbInterface().expenses();
+  Future<void> getList(int year, int month) async {
+    monthExpense = await DbInterface().monthExpenses(year, month);
     notifyListeners();
   }
 }
 
-class MonthDataReload extends ChangeNotifier {
+class ThisMonthReload extends ChangeNotifier {
   MonthData _monthData;
 
   MonthData get monthData => _monthData;
 
   Future<void> getMonthData(int year, int month) async {
     print("getmonth $_monthData");
-    _monthData = await DbInterface().monthExpense(year, month);
+    _monthData = await DbInterface().monthSum(year, month);
     notifyListeners();
   }
 }
+
+class PastData extends ChangeNotifier {
+  List<Expense> _pastExpense;
+
+  List<Expense> get pastExpense => _pastExpense;
+
+  Future<void> getList() async {
+    _pastExpense = await DbInterface().expenses();
+    notifyListeners();
+  }
+}
+

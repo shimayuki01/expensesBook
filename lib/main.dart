@@ -11,8 +11,8 @@ import 'package:flutter/widgets.dart';
 final listProvider = ChangeNotifierProvider(
   (ref) => DbListReload(),
 );
-final monthDataProvider = ChangeNotifierProvider(
-  (ref) => MonthDataReload(),
+final thisMonthProvider = ChangeNotifierProvider(
+  (ref) => ThisMonthReload(),
 );
 
 void main() {
@@ -56,19 +56,18 @@ class _MyHomePageState extends State<MyHomePage> {
       Expense(id: 1, year: 2021, month: 1, day: 7, name: "fafdaf", money: -300);
 
   MonthData _monthData;
+  int _year = DateTime.now().year;
+  int _month = DateTime.now().month;
 
   Future<void> _init() async {
 
   }
 
-  Future<MonthData> _getdata() async {
+  Future<MonthData> _getData() async {
+
     await DbInterface().init();
-    await context.read(listProvider).getList();
-
-    int _year = DateTime.now().year;
-    int _month = DateTime.now().month;
-
-    MonthData aa = await DbInterface().monthExpense(_year, _month);
+    await context.read(listProvider).getList(_year, _month);
+    MonthData aa = await DbInterface().monthSum(_year, _month);
     print("aa $aa");
     return aa;
   }
@@ -86,13 +85,13 @@ class _MyHomePageState extends State<MyHomePage> {
       //     builder: (context, ddd) {
       //       return
               FutureBuilder(
-                future: _getdata(),
+                future: _getData(),
                 builder: (context, snapshot) {
                   if (snapshot.data != null) {
                     _monthData = snapshot.data;
                     return Consumer(builder: (context, watch, child) {
-                      if (watch(monthDataProvider).monthData != null)
-                        _monthData = watch(monthDataProvider).monthData;
+                      if (watch(thisMonthProvider).monthData != null)
+                        _monthData = watch(thisMonthProvider).monthData;
                       return Padding(
                         padding: const EdgeInsets.only(top: 150),
                         child: Container(
@@ -122,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       await Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => DetailPage()),
+                                            builder: (context) => DetailPage(year: _year, month: _month)),
                                       );
                                     },
                                   ),

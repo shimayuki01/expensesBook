@@ -145,8 +145,7 @@ class Add extends State<AddPage> {
                           await DbInterface().insertExpense(add);
                           _handleId();
                           print(await DbInterface().expenses());
-                          await context.read(listProvider).getList();
-                          await context.read(monthDataProvider).getMonthData(_date.year, _date.month);
+                          await context.read(thisMonthProvider).getMonthData(DateTime.now().year, DateTime.now().month);
 
                           Navigator.pop(context);
                         }),

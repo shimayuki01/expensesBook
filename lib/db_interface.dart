@@ -32,11 +32,15 @@ class Expense {
 }
 
 class MonthData {
+  int year;
+  int month;
   int income;
   int outgo;
   int sum;
 
-  MonthData(int come, int out) {
+  MonthData(int _year, int _month, int come, int out) {
+    this.year = _year;
+    this.month = _month;
     this.income = come;
     this.outgo = -out;
     sum = this.income - this.outgo;
@@ -95,7 +99,7 @@ class DbInterface {
     );
   }
 
-  //データ表示
+  //全データ表示
   Future<List<Expense>> expenses() async {
     final List<Map<String, dynamic>> maps = await _database.query("expenses");
     if (maps.length != 0) {
@@ -114,7 +118,29 @@ class DbInterface {
     }
   }
 
-  Future<MonthData> monthExpense(int year, int month) async {
+  //月別データ表示
+  Future<List<Expense>> monthExpenses(int year, int month) async {
+    final List<Map<String, dynamic>> maps = await _database.query("expenses",
+        where: "year = ? and month = ?",
+        whereArgs: [year.toString(), month.toString()],orderBy: "day");
+    if (maps.length != 0) {
+      return List.generate(maps.length, (i) {
+        return Expense(
+          id: maps[i]['id'],
+          year: maps[i]['year'],
+          month: maps[i]['month'],
+          day: maps[i]['day'],
+          name: maps[i]['name'],
+          money: maps[i]['money'],
+        );
+      });
+    } else {
+      return null;
+    }
+  }
+
+  //月の収支合計表示
+  Future<MonthData> monthSum(int year, int month) async {
     final List<Map<String, dynamic>> income = await _database.rawQuery(
         'select sum(money) from expenses where year = ? and month = ? and money > 0',
         [year.toString(), month.toString()]);
@@ -124,17 +150,32 @@ class DbInterface {
     int come = 0;
     int out = 0;
 
-
     if (income[0]['sum(money)'] != null) come = income[0]['sum(money)'];
 
     if (outgo[0]['sum(money)'] != null) out = outgo[0]['sum(money)'];
 
-    MonthData _month = MonthData(come, out);
+    MonthData _month = MonthData(year, month, come, out);
 
     return _month;
   }
 
-  //id最大値取得
+  //過去の月別収支合計のリスト表示(一年)
+  Future<List<MonthData>> monthSumList() async {
+    List<MonthData> msl;
+    int _year = DateTime.now().year;
+    int _month = DateTime.now().month;
+    for(int i; i < 12; i++){
+      if(_month == 1){
+        _year -= 1;
+        _month = 12;
+      }
+      msl[i] = await monthSum(_year, _month);
+    }
+
+    return msl;
+  }
+
+    //id最大値取得
   Future<int> getMaxId() async {
     final List<Map<String, dynamic>> maps =
         await _database.rawQuery('select max(id) from expenses');
@@ -145,6 +186,7 @@ class DbInterface {
       return 1;
   }
 
+  //データ取得
   Future<Expense> getData(int id) async {
     List<Map<String, dynamic>> maps = await _database.query(
       'expenses',
@@ -174,6 +216,7 @@ class DbInterface {
     );
   }
 
+  //データ削除
   Future<void> deleteExpense(int id) async {
     final db = _database;
     await db.delete(

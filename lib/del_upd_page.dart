@@ -1,4 +1,3 @@
-import 'package:expenses_book_app/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'db_interface.dart';
@@ -73,8 +72,8 @@ class DelUpd extends State<DelUpdPage> {
                 icon: Icon(Icons.delete),
                 onPressed: () async {
                   await DbInterface().deleteExpense(_id);
-                  await context.read(listProvider).getList();
-                  await context.read(monthDataProvider).getMonthData(_date.year, _date.month);
+                  await context.read(listProvider).getList(_info.year, _info.month);
+                  await context.read(thisMonthProvider).getMonthData(_date.year, _date.month);
                   Navigator.pop(context);
                 }),
           ]),
@@ -157,8 +156,8 @@ class DelUpd extends State<DelUpdPage> {
                       money: _money);
 
                   await DbInterface().updateExpense(upd);
-                  await context.read(listProvider).getList();
-                  await context.read(monthDataProvider).getMonthData(_date.year, _date.month);
+                  await context.read(listProvider).getList(_info.year, _info.month);
+                  await context.read(thisMonthProvider).getMonthData(_date.year, _date.month);
                   
                 }),
           ],
