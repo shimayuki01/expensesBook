@@ -174,7 +174,6 @@ class DbInterface {
 
       msl[i] = await monthSum(_year, _month);
     }
-    print("msl$msl");
     return msl;
   }
 

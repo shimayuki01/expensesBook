@@ -27,7 +27,6 @@ class PastList extends State<PastListPage>{
         child: FutureBuilder(
           future: _getMap(),
           builder:( context, snap) {
-            print(snap.data);
             items = snap.data;
             return Consumer(builder: (context, watch, child) {
               if (watch(pastMonthProvider).pastMonthSum != null)
