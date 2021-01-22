@@ -147,6 +147,9 @@ class DelUpd extends State<DelUpdPage> {
                 color: Colors.blue,
                 onPressed: () async {
                   //更新処理
+                  if (_payment == 'out') {
+                    _money = -_money;
+                  }
                   var upd = Expense(
                       id: _id,
                       year: _date.year,
@@ -157,8 +160,8 @@ class DelUpd extends State<DelUpdPage> {
 
                   await DbInterface().updateExpense(upd);
                   await context.read(listProvider).getList(_info.year, _info.month);
-                  await context.read(thisMonthProvider).getMonthData(_date.year, _date.month);
-                  
+                  await context.read(thisMonthProvider).getMonthData(DateTime.now().year, DateTime.now().month);
+                  Navigator.pop();
                 }),
           ],
         ),
