@@ -1,6 +1,7 @@
 import 'package:expenses_book_app/db_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
+import 'detail.dart';
 import 'main.dart';
 
 class PastListPage extends StatefulWidget {
@@ -45,6 +46,14 @@ class PastList extends State<PastListPage>{
                       ],
                     ),
                     trailing: Text(items[index].sum.toString()),
+                    onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DetailPage(
+                                year: items[index].year, month: items[index].month)),
+                      );
+                    },
                   );
                 },
               );
