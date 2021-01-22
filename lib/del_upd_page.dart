@@ -161,7 +161,8 @@ class DelUpd extends State<DelUpdPage> {
                   await DbInterface().updateExpense(upd);
                   await context.read(listProvider).getList(_info.year, _info.month);
                   await context.read(thisMonthProvider).getMonthData(DateTime.now().year, DateTime.now().month);
-                  Navigator.pop();
+                  await context.read(pastMonthProvider).getList();
+                  Navigator.pop(context);
                 }),
           ],
         ),
