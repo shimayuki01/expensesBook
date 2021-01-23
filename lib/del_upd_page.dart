@@ -71,6 +71,7 @@ class DelUpd extends State<DelUpdPage> {
           //ゴミ箱アイコン作成
           trailing: IconButton(
               icon: Icon(Icons.delete),
+              padding: EdgeInsets.all(0),
               onPressed: () async {
                 await DbInterface().deleteExpense(_id);
                 await context.read(listProvider).getList(
