@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -57,8 +58,8 @@ class Add extends State<AddPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("追加ページ"),
+        appBar:CupertinoNavigationBar(
+          middle: Text("データ追加"),
         ),
         body: FutureBuilder(
             future: _setMaxId(),

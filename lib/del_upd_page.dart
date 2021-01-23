@@ -1,10 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'db_interface.dart';
 import 'package:intl/intl.dart';
 import 'package:expenses_book_app/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 
 
 class DelUpdPage extends StatefulWidget {
@@ -26,7 +26,8 @@ class DelUpd extends State<DelUpdPage> {
   int _money;
 
   //収支の切り替え
-  void _onChanged(String payment) => setState(() {
+  void _onChanged(String payment) =>
+      setState(() {
         _payment = payment;
       });
 
@@ -65,18 +66,20 @@ class DelUpd extends State<DelUpdPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("修正ページ"),
+      appBar: CupertinoNavigationBar(
+          middle: Text("今月の収支"),
           //ゴミ箱アイコン作成
-          actions: [
-            IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () async {
-                  await DbInterface().deleteExpense(_id);
-                  await context.read(listProvider).getList(_info.year, _info.month);
-                  await context.read(thisMonthProvider).getMonthData(_date.year, _date.month);
-                  Navigator.pop(context);
-                }),
-          ]),
+          trailing: IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () async {
+                await DbInterface().deleteExpense(_id);
+                await context.read(listProvider).getList(
+                    _info.year, _info.month);
+                await context.read(thisMonthProvider).getMonthData(
+                    _date.year, _date.month);
+                Navigator.pop(context);
+              }),
+      ),
 
       body: SingleChildScrollView(
         child: Column(
@@ -101,8 +104,12 @@ class DelUpd extends State<DelUpdPage> {
                     context: context,
                     locale: const Locale('ja'),
                     initialDate: _date,
-                    firstDate: DateTime(DateTime.now().year - 1),
-                    lastDate: DateTime(DateTime.now().year + 1),
+                    firstDate: DateTime(DateTime
+                        .now()
+                        .year - 1),
+                    lastDate: DateTime(DateTime
+                        .now()
+                        .year + 1),
                   );
                   if (selectedDate != null) {
                     setState(() {
@@ -125,7 +132,7 @@ class DelUpd extends State<DelUpdPage> {
               maxLines: 1,
               initialValue: _name,
               decoration:
-                  const InputDecoration(hintText: '入力してください', labelText: '名称'),
+              const InputDecoration(hintText: '入力してください', labelText: '名称'),
               onChanged: _handleName,
             ),
 
@@ -139,7 +146,7 @@ class DelUpd extends State<DelUpdPage> {
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
               ],
               decoration:
-                  const InputDecoration(hintText: '入力してください', labelText: '金額'),
+              const InputDecoration(hintText: '入力してください', labelText: '金額'),
               onChanged: _handleMoney,
             ),
             RaisedButton(
@@ -159,8 +166,13 @@ class DelUpd extends State<DelUpdPage> {
                       money: _money);
 
                   await DbInterface().updateExpense(upd);
-                  await context.read(listProvider).getList(_info.year, _info.month);
-                  await context.read(thisMonthProvider).getMonthData(DateTime.now().year, DateTime.now().month);
+                  await context.read(listProvider).getList(
+                      _info.year, _info.month);
+                  await context.read(thisMonthProvider).getMonthData(DateTime
+                      .now()
+                      .year, DateTime
+                      .now()
+                      .month);
                   await context.read(pastMonthProvider).getList();
                   Navigator.pop(context);
                 }),

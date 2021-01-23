@@ -1,4 +1,5 @@
 import 'package:expenses_book_app/db_interface.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
 import 'detail.dart';
@@ -20,8 +21,8 @@ class PastList extends State<PastListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("月別詳細"),
+      appBar: CupertinoNavigationBar(
+        middle: Text("過去の履歴"),
       ),
       body: Container(
         height: double.infinity,

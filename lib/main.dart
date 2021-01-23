@@ -151,10 +151,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           }
                         });
                   });
-            } else
+            } else {
               return PastListPage();
+            }
           }),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           //画面遷移（追加のページ）
@@ -164,7 +164,8 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         },
         child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked, // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

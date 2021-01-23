@@ -1,6 +1,7 @@
 import 'package:expenses_book_app/db_interface.dart';
 import 'package:expenses_book_app/del_upd_page.dart';
 import 'package:expenses_book_app/main.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
 
@@ -24,9 +25,10 @@ class Detail extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text("詳細"),
+      appBar: CupertinoNavigationBar(
+        middle: Text(widget.year.toString() + "年" + widget.month.toString() + "月"),
       ),
       body: Container(
         height: double.infinity,
