@@ -82,11 +82,15 @@ class Add extends State<AddPage> {
 
                     //日付の入力
                     Container(
-                      height: 50,
+                      height: MediaQuery.of(context).size.height / 3,
                       child: CupertinoDatePicker(
                         mode: CupertinoDatePickerMode.date,
                         initialDateTime: _date,
-                        onDateTimeChanged: (value) => _date,
+                        onDateTimeChanged: (DateTime selectDate){
+                          setState(() {
+                            _date = selectDate;
+                          });
+                        },
                       ),
                     ),
 
