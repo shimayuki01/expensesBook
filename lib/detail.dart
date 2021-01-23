@@ -37,8 +37,12 @@ class Detail extends State<DetailPage> {
                 builder: (context, watch, child) {
                   items = watch(listProvider).listExpense;
                   if (items != null) {
-                    return ListView.builder(
+                    return ListView.separated(
                         itemCount: items.length,
+                        separatorBuilder: (BuildContext context, index) =>
+                            Divider(
+                              color: Colors.black,
+                            ),
                         itemBuilder: (context, index) {
                           items[index].money > 0
                               ? _money = items[index].money
@@ -49,7 +53,10 @@ class Detail extends State<DetailPage> {
                               children: [
                                 items[index].money > 0
                                     ? Text("収入")
-                                    : Text("支出"),
+                                    : Text(
+                                        "支出",
+                                        style: TextStyle(color: Colors.red),
+                                      ),
                                 Text(items[index].day.toString()),
                               ],
                             ),

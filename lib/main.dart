@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<MonthData> _getData() async {
-    MonthData aa = await DbInterface().monthSum(2020, 9);
+    MonthData aa = await DbInterface().monthSum(_year, _month);
     return aa;
   }
 
