@@ -58,7 +58,7 @@ class Add extends State<AddPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar:CupertinoNavigationBar(
+        appBar: CupertinoNavigationBar(
           middle: Text("データ追加"),
         ),
         body: FutureBuilder(
@@ -81,30 +81,15 @@ class Add extends State<AddPage> {
                         onChanged: _onChanged),
 
                     //日付の入力
-                    IconButton(
-                        icon: Icon(Icons.calendar_today),
-                        onPressed: () async {
-                          final selectedDate = await showDatePicker(
-                            context: context,
-                            locale: const Locale('ja'),
-                            initialDate: _date,
-                            firstDate: DateTime(DateTime.now().year - 1),
-                            lastDate: DateTime(DateTime.now().year + 1),
-                          );
-                          if (selectedDate != null) {
-                            setState(() {
-                              _date = selectedDate;
-                              //_handleDate();
-                            });
-                          }
-                        }),
-
-                    //日付の表示
-                    Text(
-                      DateFormat('yyyy年M月d日').format(_date),
-                      style: TextStyle(fontSize: 25),
+                    Container(
+                      height: 50,
+                      child: CupertinoDatePicker(
+                        mode: CupertinoDatePickerMode.date,
+                        initialDateTime: _date,
+                        onDateTimeChanged: (value) => _date,
+                      ),
                     ),
-                    Text('$_id'),
+
 
                     //名称の入力
                     TextField(

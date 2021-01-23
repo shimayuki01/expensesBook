@@ -76,85 +76,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return aa;
   }
 
+  int _index = 0;
+
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: CupertinoTabScaffold(
-          tabBar: CupertinoTabBar(
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.trending_up), title: Text('今月')),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.format_list_bulleted), title: Text('過去の履歴')),
-            ],
-          ),
-          tabBuilder: (context, index) {
-            if (index == 0) {
-              return FutureBuilder(
-                  future: _init(),
-                  builder: (context, ddd) {
-                    return FutureBuilder(
-                        future: _getData(),
-                        builder: (context, snapshot) {
-                          if (snapshot.data != null) {
-                            _monthData = snapshot.data;
-                            return Consumer(builder: (context, watch, child) {
-                              if (watch(thisMonthProvider).monthData != null)
-                                _monthData = watch(thisMonthProvider).monthData;
-                              return Padding(
-                                padding: const EdgeInsets.only(top: 150),
-                                child: Container(
-                                  child: ListView(
-                                    children: <Widget>[
-                                      ListTile(
-                                        title: Text('今月の支出'),
-                                        trailing:
-                                            Text(_monthData.outgo.toString()),
-                                      ),
-                                      ListTile(
-                                        title: Text('今月の収入'),
-                                        trailing:
-                                            Text(_monthData.income.toString()),
-                                      ),
-                                      ListTile(
-                                        title: Text('計'),
-                                        trailing:
-                                            Text(_monthData.sum.toString()),
-                                      ),
-                                      ListTile(
-                                        title: Container(
-                                          width: 50,
-                                          child: RaisedButton(
-                                            child: const Text('詳細'),
-                                            color: Colors.blue,
-                                            shape: const StadiumBorder(),
-                                            onPressed: () async {
-                                              //画面遷移（詳細のペ－ジ）
-                                              await Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        DetailPage(
-                                                            year: _year,
-                                                            month: _month)),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            });
-                          } else {
-                            return Text("era");
-                          }
-                        });
-                  });
-            } else {
-              return PastListPage();
-            }
-          }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           //画面遷移（追加のページ）
@@ -165,7 +90,83 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         child: Icon(Icons.add),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked, // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      bottomNavigationBar: CupertinoTabBar(
+        currentIndex: _index,
+        onTap: (newIndex) {
+          setState(() {
+            _index = newIndex;
+          });
+        },
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+              icon: Icon(Icons.trending_up), title: Text('今月')),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.format_list_bulleted), title: Text('過去の履歴')),
+        ],
+      ),
+      body: _index == 0
+          ? FutureBuilder(
+              future: _init(),
+              builder: (context, ddd) {
+                return FutureBuilder(
+                    future: _getData(),
+                    builder: (context, snapshot) {
+                      if (snapshot.data != null) {
+                        _monthData = snapshot.data;
+                        return Consumer(builder: (context, watch, child) {
+                          if (watch(thisMonthProvider).monthData != null)
+                            _monthData = watch(thisMonthProvider).monthData;
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 150),
+                            child: Container(
+                              child: ListView(
+                                children: <Widget>[
+                                  ListTile(
+                                    title: Text('今月の支出'),
+                                    trailing: Text(_monthData.outgo.toString()),
+                                  ),
+                                  ListTile(
+                                    title: Text('今月の収入'),
+                                    trailing:
+                                        Text(_monthData.income.toString()),
+                                  ),
+                                  ListTile(
+                                    title: Text('計'),
+                                    trailing: Text(_monthData.sum.toString()),
+                                  ),
+                                  ListTile(
+                                    title: Container(
+                                      width: 50,
+                                      child: RaisedButton(
+                                        child: const Text('詳細'),
+                                        color: Colors.blue,
+                                        shape: const StadiumBorder(),
+                                        onPressed: () async {
+                                          //画面遷移（詳細のペ－ジ）
+                                          await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailPage(
+                                                        year: _year,
+                                                        month: _month)),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        });
+                      } else {
+                        return Text("era");
+                      }
+                    });
+              })
+          : PastListPage(),
     );
   }
 }
