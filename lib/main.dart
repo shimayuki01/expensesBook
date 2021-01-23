@@ -80,6 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget build(BuildContext context) {
     return Scaffold(
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           //画面遷移（追加のページ）
@@ -90,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         child: Icon(Icons.add),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: CupertinoTabBar(
         currentIndex: _index,
         onTap: (newIndex) {
