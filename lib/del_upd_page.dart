@@ -48,7 +48,6 @@ class DelUpd extends State<DelUpdPage> {
   //初期値を代入
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _info = widget.data;
     _id = _info.id;
@@ -67,12 +66,11 @@ class DelUpd extends State<DelUpdPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CupertinoNavigationBar(
-          middle: Text("今月の収支"),
+          middle: Text("更新・削除"),
           //ゴミ箱アイコン作成
-          trailing: IconButton(
-              icon: Icon(Icons.delete),
-              padding: EdgeInsets.all(0),
-              onPressed: () async {
+          trailing: GestureDetector(
+              child:Icon(CupertinoIcons.delete),
+              onTap : () async {
                 await DbInterface().deleteExpense(_id);
                 await context.read(listProvider).getList(
                     _info.year, _info.month);
