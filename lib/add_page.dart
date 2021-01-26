@@ -81,18 +81,33 @@ class Add extends State<AddPage> {
                         onChanged: _onChanged),
 
                     //日付の入力
-                    Container(
-                      height: MediaQuery.of(context).size.height / 3,
-                      child: CupertinoDatePicker(
-                        mode: CupertinoDatePickerMode.date,
-                        initialDateTime: _date,
-                        onDateTimeChanged: (DateTime selectDate){
-                          setState(() {
-                            _date = selectDate;
-                          });
-                        },
-                      ),
-                    ),
+                    FlatButton(
+                        child: Text(_date.year.toString() +
+                            '/' +
+                            _date.month.toString() +
+                            '/' +
+                            _date.day.toString()),
+                        textColor: Colors.black,
+                        onPressed: () {
+                          showCupertinoModalPopup(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Container(
+                                  height:
+                                      150,
+                                  child: CupertinoDatePicker(
+                                    mode: CupertinoDatePickerMode.date,
+                                    initialDateTime: _date,
+                                    onDateTimeChanged: (DateTime selectDate) {
+                                      setState(() {
+                                        _date = selectDate;
+                                      });
+                                    },
+                                  ),
+                                );
+                              });
+                        }),
+
 
 
                     //名称の入力
