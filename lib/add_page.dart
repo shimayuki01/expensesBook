@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'db_interface.dart';
 import 'main.dart';
 import 'package:flutter_riverpod/all.dart';

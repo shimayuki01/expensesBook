@@ -1,3 +1,4 @@
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:expenses_book_app/add_page.dart';
 import 'package:expenses_book_app/month_sum_list.dart';
 import 'package:expenses_book_app/provider.dart';
@@ -19,6 +20,8 @@ final pastMonthProvider = ChangeNotifierProvider(
 );
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Admob.initialize();
   runApp(ProviderScope(child: MyApp()));
 }
 

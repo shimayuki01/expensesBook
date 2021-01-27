@@ -32,6 +32,8 @@ dependencies:
 
   flutter_riverpod: ^0.12.2
 
+  admob_flutter: ^1.0.1
+
 
 dev_dependencies:
   flutter_test:
