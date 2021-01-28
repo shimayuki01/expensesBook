@@ -1,4 +1,3 @@
-
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:expenses_book_app/services/admob.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,12 +8,12 @@ import 'package:expenses_book_app/main.dart';
 
 import 'detail.dart';
 
-class ThisMonthPage extends StatefulWidget{
+class ThisMonthPage extends StatefulWidget {
   @override
   ThisMonth createState() => new ThisMonth();
 }
 
-class ThisMonth extends State<ThisMonthPage>{
+class ThisMonth extends State<ThisMonthPage> {
   MonthData _monthData;
   int _year = DateTime.now().year;
   int _month = DateTime.now().month;
@@ -32,47 +31,52 @@ class ThisMonth extends State<ThisMonthPage>{
 
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: CupertinoNavigationBar(
-          middle: Text("今月の収支"),
-        ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              AdmobBanner(
-                adUnitId: AdMobService().getBannerAdUnitId(),
-                adSize: AdmobBannerSize(
-                  width: MediaQuery.of(context).size.width.toInt(),
-                  height: AdMobService().getHeight(context).toInt(),
-                  name: 'SMART_BANNER',
-                ),
+      appBar: CupertinoNavigationBar(
+        middle: Text("今月の収支"),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            AdmobBanner(
+              adUnitId: AdMobService().getBannerAdUnitId(),
+              adSize: AdmobBannerSize(
+                width: MediaQuery.of(context).size.width.toInt(),
+                height: AdMobService().getHeight(context).toInt(),
+                name: 'SMART_BANNER',
               ),
-              Expanded(
-                child:  FutureBuilder(
-                    future: _init(),
-                    builder: (context, ddd) {
-                      return FutureBuilder(
-                          future: _getData(),
-                          builder: (context, snapshot) {
+            ),
+            Expanded(
+              child: FutureBuilder(
+                  future: _init(),
+                  builder: (context, ddd) {
+                    return FutureBuilder(
+                        future: _getData(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
                             if (snapshot.data != null) {
                               _monthData = snapshot.data;
                               return Consumer(builder: (context, watch, child) {
                                 if (watch(thisMonthProvider).monthData != null)
-                                  _monthData = watch(thisMonthProvider).monthData;
+                                  _monthData =
+                                      watch(thisMonthProvider).monthData;
                                 return Container(
                                   child: ListView(
                                     children: <Widget>[
                                       ListTile(
                                         title: Text('今月の支出'),
-                                        trailing: Text(_monthData.outgo.toString()),
+                                        trailing:
+                                            Text(_monthData.outgo.toString()),
                                       ),
                                       ListTile(
                                         title: Text('今月の収入'),
                                         trailing:
-                                        Text(_monthData.income.toString()),
+                                            Text(_monthData.income.toString()),
                                       ),
                                       ListTile(
                                         title: Text('計'),
-                                        trailing: Text(_monthData.sum.toString()),
+                                        trailing:
+                                            Text(_monthData.sum.toString()),
                                       ),
                                       ListTile(
                                         title: Container(
@@ -102,14 +106,15 @@ class ThisMonth extends State<ThisMonthPage>{
                             } else {
                               return Text("error");
                             }
-                          });
-                    }),
-              )
-            ],
-          ),
+                          } else {
+                            return Center(child: CupertinoActivityIndicator());
+                          }
+                        });
+                  }),
+            )
+          ],
         ),
-
+      ),
     );
   }
-
 }
