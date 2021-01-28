@@ -45,6 +45,14 @@ class ThisMonth extends State<ThisMonthPage> {
                 name: 'SMART_BANNER',
               ),
             ),
+            AdmobBanner(
+              adUnitId: AdMobService().getBannerAdUnitId(),
+              adSize: AdmobBannerSize(
+                width: MediaQuery.of(context).size.width.toInt(),
+                height: AdMobService().getHeight(context).toInt(),
+                name: 'SMART_BANNER',
+              ),
+            ),
             Expanded(
               child: FutureBuilder(
                   future: _init(),

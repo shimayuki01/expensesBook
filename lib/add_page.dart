@@ -65,11 +65,19 @@ class Add extends State<AddPage> {
         body: FutureBuilder(
             future: _setMaxId(),
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
+              //if (snapshot.connectionState == ConnectionState.done) {
                 _id = snapshot.data;
                 return SingleChildScrollView(
                   child: Column(
                     children: [
+                      AdmobBanner(
+                        adUnitId: AdMobService().getBannerAdUnitId(),
+                        adSize: AdmobBannerSize(
+                          width: MediaQuery.of(context).size.width.toInt(),
+                          height: AdMobService().getHeight(context).toInt(),
+                          name: 'SMART_BANNER',
+                        ),
+                      ),
                       AdmobBanner(
                         adUnitId: AdMobService().getBannerAdUnitId(),
                         adSize: AdmobBannerSize(
@@ -163,9 +171,9 @@ class Add extends State<AddPage> {
                     ],
                   ),
                 );
-              } else {
-                return Center(child: CupertinoActivityIndicator());
-              }
+              // } else {
+              //   return Center(child: CupertinoActivityIndicator());
+              // }
             }));
   }
 }

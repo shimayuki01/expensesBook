@@ -17,7 +17,7 @@ class AdMobService {
   // 表示するバナー広告の高さを計算
   double getHeight(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final percent = (height * 0.12).toDouble();
+    final percent = (height * 0.06).toDouble();
 
     return percent;
   }
