@@ -166,12 +166,13 @@ class DbInterface {
     int _year = DateTime.now().year;
     int _month = DateTime.now().month;
     for (int i = 0; i < 12; i++) {
-      msl[i] = await monthSum(_year, _month);
       if (_month == 1) {
         _year = _year - 1;
         _month = 12;
       } else
         _month = _month - 1;
+      msl[i] = await monthSum(_year, _month);
+
     }
     return msl;
   }
