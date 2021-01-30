@@ -21,9 +21,7 @@ class PastList extends State<PastListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CupertinoNavigationBar(
-        middle: Text("過去の履歴"),
-      ),
+
       body: Container(
         height: double.infinity,
         child: FutureBuilder(

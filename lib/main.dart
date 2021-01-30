@@ -10,13 +10,13 @@ import 'package:flutter_riverpod/all.dart';
 import 'package:flutter/widgets.dart';
 
 final listProvider = ChangeNotifierProvider(
-  (ref) => DbListReload(),
+      (ref) => DbListReload(),
 );
 final thisMonthProvider = ChangeNotifierProvider(
-  (ref) => ThisMonthReload(),
+      (ref) => ThisMonthReload(),
 );
 final pastMonthProvider = ChangeNotifierProvider(
-  (ref) => PastSumData(),
+      (ref) => PastSumData(),
 );
 
 void main() {
@@ -62,12 +62,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   int _index = 0;
 
   Widget build(BuildContext context) {
     return Scaffold(
-
+      appBar: CupertinoNavigationBar(
+        middle: _index == 0 ? Text("今月の収支") : Text("過去の履歴"),
+        trailing: GestureDetector(child: Icon(CupertinoIcons.settings),
+            //onTap:
+            ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           //画面遷移（追加のページ）
@@ -93,9 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.format_list_bulleted), title: Text('過去の履歴')),
         ],
       ),
-      body: _index == 0
-          ? ThisMonthPage()
-          : PastListPage(),
+      body: _index == 0 ? ThisMonthPage() : PastListPage(),
     );
   }
 }
