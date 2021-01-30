@@ -206,6 +206,7 @@ class Add extends State<AddPage> {
                           _handleId();
                           await context.read(thisMonthProvider).getMonthData(
                               DateTime.now().year, DateTime.now().month);
+                          await context.read(pastMonthProvider).getList();
                           Navigator.pop(context);
                         }),
                   ],
