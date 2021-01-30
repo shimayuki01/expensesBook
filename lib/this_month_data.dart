@@ -31,28 +31,18 @@ class ThisMonth extends State<ThisMonthPage> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CupertinoNavigationBar(
-        middle: Text("今月の収支"),
-      ),
       body: SafeArea(
         child: Column(
           children: [
-            AdmobBanner(
-              adUnitId: AdMobService().getBannerAdUnitId(),
-              adSize: AdmobBannerSize(
-                width: MediaQuery.of(context).size.width.toInt(),
-                height: AdMobService().getHeight(context).toInt(),
-                name: 'SMART_BANNER',
-              ),
-            ),
-            AdmobBanner(
-              adUnitId: AdMobService().getBannerAdUnitId(),
-              adSize: AdmobBannerSize(
-                width: MediaQuery.of(context).size.width.toInt(),
-                height: AdMobService().getHeight(context).toInt(),
-                name: 'SMART_BANNER',
-              ),
-            ),
+            // AdmobBanner(
+            //   adUnitId: AdMobService().getBannerAdUnitId(),
+            //   adSize: AdmobBannerSize(
+            //     width: MediaQuery.of(context).size.width.toInt(),
+            //     height: AdMobService().getHeight(context).toInt(),
+            //     name: 'SMART_BANNER',
+            //   ),
+            // ),
+
             Expanded(
               child: FutureBuilder(
                   future: _init(),
