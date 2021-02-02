@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:expenses_book_app/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 class DelUpdPage extends StatefulWidget {
   //Expenseの受け渡し
   final Expense data;
@@ -26,8 +25,7 @@ class DelUpd extends State<DelUpdPage> {
   int _money;
 
   //収支の切り替え
-  void _onChanged(String payment) =>
-      setState(() {
+  void _onChanged(String payment) => setState(() {
         _payment = payment;
       });
 
@@ -66,117 +64,154 @@ class DelUpd extends State<DelUpdPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CupertinoNavigationBar(
-          middle: Text("更新・削除"),
-          //ゴミ箱アイコン作成
-          trailing: GestureDetector(
-              child:Icon(CupertinoIcons.delete),
-              onTap : () async {
-                await DbInterface().deleteExpense(_id);
-                await context.read(listProvider).getList(
-                    _info.year, _info.month);
-                await context.read(thisMonthProvider).getMonthData(
-                    _date.year, _date.month);
-                Navigator.pop(context);
-              }),
-      ),
-
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            //収支のラジオボタン
-            RadioListTile(
-                title: Text('収入'),
-                value: 'in',
-                groupValue: _payment,
-                onChanged: _onChanged),
-            RadioListTile(
-                title: Text('支出'),
-                value: 'out',
-                groupValue: _payment,
-                onChanged: _onChanged),
-
-            //日付の入力
-            IconButton(
-                icon: Icon(Icons.calendar_today),
-                onPressed: () async {
-                  final selectedDate = await showDatePicker(
-                    context: context,
-                    locale: const Locale('ja'),
-                    initialDate: _date,
-                    firstDate: DateTime(DateTime
-                        .now()
-                        .year - 1),
-                    lastDate: DateTime(DateTime
-                        .now()
-                        .year + 1),
+        middle: Text("データ修正"),
+        //ゴミ箱アイコン作成
+        trailing: GestureDetector(
+            child: Icon(CupertinoIcons.delete),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return CupertinoAlertDialog(
+                    title: Text("削除しますか？"),
+                    actions: <Widget>[
+                      CupertinoDialogAction(
+                        child: Text("いいえ"),
+                        isDestructiveAction: true,
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      CupertinoDialogAction(
+                          child: Text("はい"),
+                          isDefaultAction: true,
+                          onPressed: () async {
+                            await DbInterface().deleteExpense(_id);
+                            await context
+                                .read(listProvider)
+                                .getList(_info.year, _info.month);
+                            await context
+                                .read(thisMonthProvider)
+                                .getMonthData(_date.year, _date.month);
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          })
+                    ],
                   );
-                  if (selectedDate != null) {
-                    setState(() {
-                      _date = selectedDate;
-                      //_handleDate();
-                    });
-                  }
-                }),
+                },
+              );
+            }),
+      ),
+      body: SingleChildScrollView(
+        child: Column(children: [
+          //収支のラジオボタン
+          RadioListTile(
+              title: Text('収入'),
+              value: 'in',
+              groupValue: _payment,
+              onChanged: _onChanged),
+          RadioListTile(
+              title: Text('支出'),
+              value: 'out',
+              groupValue: _payment,
+              onChanged: _onChanged),
 
-            //日付の表示
-            Text(
-              DateFormat('yyyy年M月d日').format(_date),
-              style: TextStyle(fontSize: 25),
-            ),
+          //日付の入力
+          IconButton(
+              icon: Icon(Icons.calendar_today),
+              onPressed: () async {
+                final selectedDate = await showDatePicker(
+                  context: context,
+                  locale: const Locale('ja'),
+                  initialDate: _date,
+                  firstDate: DateTime(DateTime.now().year - 1),
+                  lastDate: DateTime(DateTime.now().year + 1),
+                );
+                if (selectedDate != null) {
+                  setState(() {
+                    _date = selectedDate;
+                    //_handleDate();
+                  });
+                }
+              }),
 
-            //名称の入力
-            TextFormField(
-              maxLength: 20,
-              maxLengthEnforced: true,
-              maxLines: 1,
-              initialValue: _name,
-              decoration:
-              const InputDecoration(hintText: '入力してください', labelText: '名称'),
-              onChanged: _handleName,
-            ),
+          //日付の表示
+          Text(
+            DateFormat('yyyy年M月d日').format(_date),
+            style: TextStyle(fontSize: 25),
+          ),
 
-            //金額の入力
-            TextFormField(
-              maxLength: 7,
-              maxLengthEnforced: true,
-              maxLines: 1,
-              initialValue: _money.toString(),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
-              ],
-              decoration:
-              const InputDecoration(hintText: '入力してください', labelText: '金額'),
-              onChanged: _handleMoney,
-            ),
-            RaisedButton(
-                child: const Text("更新"),
-                color: Colors.blue,
-                onPressed: () async {
-                  //更新処理
-                  if (_payment == 'out') {
-                    _money = -_money;
-                  }
-                  var upd = Expense(
-                      id: _id,
-                      year: _date.year,
-                      month: _date.month,
-                      day: _date.day,
-                      name: _name,
-                      money: _money);
+          //名称の入力
+          TextFormField(
+            maxLength: 20,
+            maxLengthEnforced: true,
+            maxLines: 1,
+            initialValue: _name,
+            decoration:
+                const InputDecoration(hintText: '入力してください', labelText: '名称'),
+            onChanged: _handleName,
+          ),
 
-                  await DbInterface().updateExpense(upd);
-                  await context.read(listProvider).getList(
-                      _info.year, _info.month);
-                  await context.read(thisMonthProvider).getMonthData(DateTime
-                      .now()
-                      .year, DateTime
-                      .now()
-                      .month);
-                  await context.read(pastMonthProvider).getList();
-                  Navigator.pop(context);
-                }),
-          ],
-        ),
+          //金額の入力
+          TextFormField(
+            maxLength: 7,
+            maxLengthEnforced: true,
+            maxLines: 1,
+            initialValue: _money.toString(),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+            ],
+            decoration:
+                const InputDecoration(hintText: '入力してください', labelText: '金額'),
+            onChanged: _handleMoney,
+          ),
+          RaisedButton(
+              child: const Text("更新"),
+              color: Colors.blue,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return CupertinoAlertDialog(
+                      title: Text("更新しますか？"),
+                      actions: <Widget>[
+                        CupertinoDialogAction(
+                          child: Text("いいえ"),
+                          isDestructiveAction: true,
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        CupertinoDialogAction(
+                            child: Text("はい"),
+                            isDefaultAction: true,
+                            onPressed: () async {
+                              //更新処理
+                              if (_payment == 'out') {
+                                _money = -_money;
+                              }
+                              var upd = Expense(
+                                  id: _id,
+                                  year: _date.year,
+                                  month: _date.month,
+                                  day: _date.day,
+                                  name: _name,
+                                  money: _money);
+
+                              await DbInterface().updateExpense(upd);
+                              await context
+                                  .read(listProvider)
+                                  .getList(_info.year, _info.month);
+                              await context
+                                  .read(thisMonthProvider)
+                                  .getMonthData(DateTime.now().year,
+                                      DateTime.now().month);
+                              await context.read(pastMonthProvider).getList();
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            }),
+                      ],
+                    );
+                  },
+                );
+              }),
+        ]),
       ),
     );
   }
