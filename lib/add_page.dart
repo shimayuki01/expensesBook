@@ -209,7 +209,7 @@ class Add extends State<AddPage> {
                               onPressed: () async {
                                 if (_formKey.currentState.validate()) {
                                   Scaffold.of(context)
-                                      .showSnackBar(SnackBar(content: Text('更新しました。')));
+                                      .showSnackBar(SnackBar(content: Text('追加しました')));
                                   //追加処理
                                   if (_payment == 'out') {
                                     _money = -_money;
@@ -233,6 +233,9 @@ class Add extends State<AddPage> {
                                   await Future.delayed(new Duration(seconds: 1));
                                   Navigator.pop(context);
 
+                                }else{
+                                  Scaffold.of(context)
+                                      .showSnackBar(SnackBar(content: Text('穏やかじゃないですね')));
                                 }
 
                               }),
