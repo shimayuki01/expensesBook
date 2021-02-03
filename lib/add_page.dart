@@ -19,6 +19,7 @@ class Add extends State<AddPage> {
   String _name = '';
   int _money = 0;
   int _id;
+  final _formKey = GlobalKey<FormState>();
 
   Future<int> _setMaxId() async {
     return await DbInterface().getMaxId();
@@ -166,49 +167,80 @@ class Add extends State<AddPage> {
                         }),
 
                     //名称の入力
-                    TextField(
-                      maxLength: 20,
-                      maxLengthEnforced: true,
-                      maxLines: 1,
-                      decoration: const InputDecoration(
-                          hintText: '入力してください', labelText: '名称'),
-                      onChanged: _handleName,
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            maxLength: 20,
+                            maxLengthEnforced: true,
+                            maxLines: 1,
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return '入力してください';
+                              }
+                              return null;
+                            },
+                            decoration: const InputDecoration(
+                                hintText: 'リンゴ、給与', labelText: '名称'),
+                            onChanged: _handleName,
+                          ),
+                          //金額の入力
+                          TextFormField(
+                            maxLength: 10,
+                            maxLengthEnforced: true,
+                            maxLines: 1,
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return '入力してください';
+                              }
+                              return null;
+                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+                            ],
+                            decoration: const InputDecoration(
+                                hintText: '1000', labelText: '金額'),
+                            onChanged: _handleMoney,
+                          ),
+                          RaisedButton(
+                              child: const Text("追加"),
+                              color: Colors.blue,
+                              onPressed: () async {
+                                if (_formKey.currentState.validate()) {
+                                  Scaffold.of(context)
+                                      .showSnackBar(SnackBar(content: Text('更新しました。')));
+                                  //追加処理
+                                  if (_payment == 'out') {
+                                    _money = -_money;
+                                  }
+                                  Expense add = Expense(
+                                      id: _id,
+                                      year: _date.year,
+                                      month: _date.month,
+                                      day: _date.day,
+                                      name: _name,
+                                      money: _money);
+                                  await DbInterface().insertExpense(add);
+                                  _handleId();
+                                  await context
+                                      .read(thisMonthProvider)
+                                      .getMonthData(DateTime.now().year,
+                                      DateTime.now().month);
+                                  await context
+                                      .read(pastMonthProvider)
+                                      .getList();
+                                  await Future.delayed(new Duration(seconds: 1));
+                                  Navigator.pop(context);
+
+                                }
+
+                              }),
+                        ],
+                      ),
                     ),
 
-                    //金額の入力
-                    TextField(
-                      maxLength: 7,
-                      maxLengthEnforced: true,
-                      maxLines: 1,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
-                      ],
-                      decoration: const InputDecoration(
-                          hintText: '1000', labelText: '金額'),
-                      onChanged: _handleMoney,
-                    ),
-                    RaisedButton(
-                        child: const Text("追加"),
-                        color: Colors.blue,
-                        onPressed: () async {
-                          //追加処理
-                          if (_payment == 'out') {
-                            _money = -_money;
-                          }
-                          Expense add = Expense(
-                              id: _id,
-                              year: _date.year,
-                              month: _date.month,
-                              day: _date.day,
-                              name: _name,
-                              money: _money);
-                          await DbInterface().insertExpense(add);
-                          _handleId();
-                          await context.read(thisMonthProvider).getMonthData(
-                              DateTime.now().year, DateTime.now().month);
-                          await context.read(pastMonthProvider).getList();
-                          Navigator.pop(context);
-                        }),
+
                   ],
                 ),
               );
