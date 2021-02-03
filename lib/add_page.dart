@@ -15,7 +15,7 @@ class AddPage extends StatefulWidget {
 class Add extends State<AddPage> {
   String _payment = 'out';
   DateTime _date = DateTime.now();
-  DateTime _selectDate;
+  DateTime _selectDate = DateTime.now();
   String _name = '';
   int _money = 0;
   int _id;
@@ -93,78 +93,96 @@ class Add extends State<AddPage> {
                         onChanged: _onChanged),
 
                     //日付の入力
-                    FlatButton(
-                        child: Text(_date.year.toString() +
-                            '/' +
-                            _date.month.toString() +
-                            '/' +
-                            _date.day.toString()),
-                        textColor: Colors.black,
-                        onPressed: () {
-                          showCupertinoModalPopup(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Color(0xffffffff),
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            color: Color(0xff999999),
-                                            width: 0.0,
+                    Container(
+                      width: double.infinity,
+                      height:  MediaQuery.of(context).size.height /
+                          10,
+                      child: FlatButton(
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('日付'),
+                              Text(
+                                _date.year.toString() +
+                                    '/' +
+                                    _date.month.toString() +
+                                    '/' +
+                                    _date.day.toString(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 30,
+                                ),
+                              ),
+                            ],
+                          ),
+                          textColor: Colors.black,
+                          onPressed: () {
+                            showCupertinoModalPopup(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Color(0xffffffff),
+                                          border: Border(
+                                            bottom: BorderSide(
+                                              color: Color(0xff999999),
+                                              width: 0.0,
+                                            ),
                                           ),
                                         ),
+                                        child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              CupertinoButton(
+                                                child: Text('キャンセル'),
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                              CupertinoButton(
+                                                child: Text('完了'),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _date = _selectDate;
+                                                  });
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                            ]),
                                       ),
-                                      child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            CupertinoButton(
-                                              child: Text('キャンセル'),
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
+                                      Container(
+                                        height:
+                                            MediaQuery.of(context).size.height /
+                                                3,
+                                        decoration: BoxDecoration(
+                                          color: Color(0xffffffff),
+                                          border: Border(
+                                            bottom: BorderSide(
+                                              color: Color(0xff999999),
+                                              width: 0.0,
                                             ),
-                                            CupertinoButton(
-                                              child: Text('完了'),
-                                              onPressed: () {
-                                                setState(() {
-                                                  _date = _selectDate;
-                                                });
-                                                Navigator.pop(context);
-                                              },
-                                            ),
-                                          ]),
-                                    ),
-                                    Container(
-                                      height:
-                                          MediaQuery.of(context).size.height /
-                                              3,
-                                      decoration: BoxDecoration(
-                                        color: Color(0xffffffff),
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            color: Color(0xff999999),
-                                            width: 0.0,
                                           ),
                                         ),
+                                        child: CupertinoDatePicker(
+                                          mode: CupertinoDatePickerMode.date,
+                                          initialDateTime: _date,
+                                          onDateTimeChanged:
+                                              (DateTime newDateTime) {
+                                            setState(() =>
+                                                _selectDate = newDateTime);
+                                          },
+                                        ),
                                       ),
-                                      child: CupertinoDatePicker(
-                                        mode: CupertinoDatePickerMode.date,
-                                        initialDateTime: _date,
-                                        onDateTimeChanged:
-                                            (DateTime newDateTime) {
-                                          setState(
-                                              () => _selectDate = newDateTime);
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              });
-                        }),
+                                    ],
+                                  );
+                                });
+                          }),
+                    ),
 
                     //名称の入力
                     Form(
@@ -197,7 +215,8 @@ class Add extends State<AddPage> {
                               return null;
                             },
                             inputFormatters: [
-                              FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9]'))
                             ],
                             decoration: const InputDecoration(
                                 hintText: '1000', labelText: '金額'),
@@ -208,8 +227,8 @@ class Add extends State<AddPage> {
                               color: Colors.blue,
                               onPressed: () async {
                                 if (_formKey.currentState.validate()) {
-                                  Scaffold.of(context)
-                                      .showSnackBar(SnackBar(content: Text('追加しました')));
+                                  Scaffold.of(context).showSnackBar(
+                                      SnackBar(content: Text('追加しました')));
                                   //追加処理
                                   if (_payment == 'out') {
                                     _money = -_money;
@@ -226,24 +245,21 @@ class Add extends State<AddPage> {
                                   await context
                                       .read(thisMonthProvider)
                                       .getMonthData(DateTime.now().year,
-                                      DateTime.now().month);
+                                          DateTime.now().month);
                                   await context
                                       .read(pastMonthProvider)
                                       .getList();
-                                  await Future.delayed(new Duration(seconds: 1));
+                                  await Future.delayed(
+                                      new Duration(seconds: 1));
                                   Navigator.pop(context);
-
-                                }else{
-                                  Scaffold.of(context)
-                                      .showSnackBar(SnackBar(content: Text('穏やかじゃないですね')));
+                                } else {
+                                  Scaffold.of(context).showSnackBar(
+                                      SnackBar(content: Text('穏やかじゃないですね')));
                                 }
-
                               }),
                         ],
                       ),
                     ),
-
-
                   ],
                 ),
               );
