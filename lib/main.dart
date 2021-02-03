@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/all.dart';
 import 'package:flutter/widgets.dart';
+import 'package:expenses_book_app/services/JapaneseCupertinoLocalizations.dart' as jcl;
+
 
 final listProvider = ChangeNotifierProvider(
       (ref) => DbListReload(),
@@ -43,11 +45,14 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
+        DefaultCupertinoLocalizations.delegate,
+        jcl.JapaneseCupertinoLocalizations.delegate
       ],
       supportedLocales: [
-        const Locale("en"),
-        const Locale("ja"),
+        const Locale('en', 'US'),
+        const Locale('ja', 'JP'),
       ],
+      locale:  Locale('ja', 'JP'),
     );
   }
 }
