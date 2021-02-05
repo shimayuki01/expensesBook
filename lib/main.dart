@@ -10,6 +10,8 @@ import 'package:flutter_riverpod/all.dart';
 import 'package:flutter/widgets.dart';
 import 'package:expenses_book_app/services/JapaneseCupertinoLocalizations.dart'
     as jcl;
+import 'package:url_launcher/url_launcher.dart';
+
 
 final listProvider = ChangeNotifierProvider(
   (ref) => DbListReload(),
@@ -70,6 +72,25 @@ class _MyHomePageState extends State<MyHomePage> {
   int _index = 0;
   GlobalKey<ScaffoldState> _key = new GlobalKey<ScaffoldState>();
 
+  void _openMailApp() async {
+    final title = Uri.encodeComponent('タイトル');
+    final body = Uri.encodeComponent('本文');
+    const mailAddress = 'test@example.com';
+
+    return _launchURL(
+      'mailto:$mailAddress?subject=$title&body=$body',
+    );
+  }
+
+  Future<void> _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      final Error error = ArgumentError('Could not launch $url');
+      throw error;
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       key: _key,
@@ -105,6 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 title: Text(
                   'お問い合わせ',
                 ),
+                onTap: _openMailApp,
                 trailing: Icon(
                   CupertinoIcons.mail,
                 ),
