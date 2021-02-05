@@ -8,17 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/all.dart';
 import 'package:flutter/widgets.dart';
-import 'package:expenses_book_app/services/JapaneseCupertinoLocalizations.dart' as jcl;
-
+import 'package:expenses_book_app/services/JapaneseCupertinoLocalizations.dart'
+    as jcl;
 
 final listProvider = ChangeNotifierProvider(
-      (ref) => DbListReload(),
+  (ref) => DbListReload(),
 );
 final thisMonthProvider = ChangeNotifierProvider(
-      (ref) => ThisMonthReload(),
+  (ref) => ThisMonthReload(),
 );
 final pastMonthProvider = ChangeNotifierProvider(
-      (ref) => PastSumData(),
+  (ref) => PastSumData(),
 );
 
 void main() {
@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
         const Locale('en', 'US'),
         const Locale('ja', 'JP'),
       ],
-      locale:  Locale('ja', 'JP'),
+      locale: Locale('ja', 'JP'),
     );
   }
 }
@@ -68,14 +68,50 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _index = 0;
+  GlobalKey<ScaffoldState> _key = new GlobalKey<ScaffoldState>();
 
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _key,
       appBar: CupertinoNavigationBar(
-        middle: _index == 0 ? Text("今月の収支") : Text("過去の履歴"),
-        trailing: GestureDetector(child: Icon(CupertinoIcons.settings),
-            //onTap:
-            ),
+          middle: _index == 0 ? Text("今月の収支") : Text("過去の履歴"),
+          trailing: GestureDetector(
+              child: Icon(CupertinoIcons.settings),
+              onTap: () {
+                _key.currentState.openEndDrawer();
+              })),
+      endDrawer: Container(
+        width: MediaQuery.of(context).size.width / 2,
+        child: Drawer(
+          child: ListView(
+            children: [
+              Container(
+                color: Colors.grey,
+                child: ListTile(
+                  title: Text('オプション'),
+                ),
+              ),
+              ListTile(
+                title: Text(
+                  'データの全削除',
+                  style: TextStyle(color: Colors.red),
+                ),
+                trailing: Icon(
+                  CupertinoIcons.delete,
+                  color: Colors.red,
+                ),
+              ),
+              ListTile(
+                title: Text(
+                  'お問い合わせ',
+                ),
+                trailing: Icon(
+                  CupertinoIcons.mail,
+                ),
+              )
+            ],
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
