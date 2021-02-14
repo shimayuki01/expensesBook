@@ -72,6 +72,14 @@ class _MyHomePageState extends State<MyHomePage> {
   GlobalKey<ScaffoldState> _key = new GlobalKey<ScaffoldState>();
   var _isDeleting = 0;
 
+  Future<void> _deletingDb() async {
+    await DbInterface().delDb();
+    await Future.delayed(new Duration(seconds: 1));
+    setState(() {
+      _isDeleting = 0;
+    });
+  }
+
   Future<void> _deleteAlert() async {
     return await showDialog(
         context: context,
@@ -107,33 +115,32 @@ class _MyHomePageState extends State<MyHomePage> {
                                 CupertinoDialogAction(
                                   child: Text("はい"),
                                   isDestructiveAction: true,
-                                  onPressed: () {
+                                  onPressed: () async {
+                                    Navigator.pop(context);
                                     setState(() {
                                       _isDeleting = 1;
                                     });
-                                    DbInterface().delDb();
-                                    DbInterface().init();
-                                    context.read(thisMonthProvider).getMonthData(DateTime.now().year,
-                                        DateTime.now().month);
-                                    context.read(pastMonthProvider).getList();
-                                   setState(() {
-                                     _isDeleting = 0;
-                                   });
-                                    showDialog(context: context,builder: (context){
-                                      return CupertinoAlertDialog(
-                                        title: Text("データを削除しました"),
-                                        actions: [
-                                          CupertinoDialogAction(
-                                            child: Text("OK"),
-                                            isDefaultAction: true,
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              Navigator.pop(context);
-                                            }
-                                          )
-                                        ],
-                                      );
-                                    });
+                                    await _deletingDb();
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return _isDeleting == 1
+                                              ? CupertinoAlertDialog(
+                                                  title:
+                                                      CupertinoActivityIndicator())
+                                              : CupertinoAlertDialog(
+                                                  title: Text("データを削除しました"),
+                                                  actions: [
+                                                    CupertinoDialogAction(
+                                                        child: Text("OK"),
+                                                        isDefaultAction: true,
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        })
+                                                  ],
+                                                );
+                                        });
                                   },
                                 )
                               ]);
@@ -213,9 +220,9 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.format_list_bulleted), title: Text('過去の履歴')),
         ],
       ),
-      body: _isDeleting == 0 ?
-      _index == 0 ? ThisMonthPage() : PastListPage() : Center(
-          child: CupertinoActivityIndicator()),
+      body: _isDeleting == 0
+          ? _index == 0 ? ThisMonthPage() : PastListPage()
+          : Center(child: CupertinoActivityIndicator()),
     );
   }
 }

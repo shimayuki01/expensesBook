@@ -88,6 +88,7 @@ class DbInterface {
     Directory documentDirectory = await getApplicationDocumentsDirectory();
     final path = join(documentDirectory.path, "expenses_database.db");
     await deleteDatabase(path);
+    await init();
   }
 
   //データ挿入

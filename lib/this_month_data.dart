@@ -22,6 +22,9 @@ class ThisMonth extends State<ThisMonthPage> {
     await DbInterface().init();
     await context.read(listProvider).getList(_year, _month);
     await context.read(pastMonthProvider).getList();
+    await context
+        .read(thisMonthProvider)
+        .getMonthData(DateTime.now().year, DateTime.now().month);
   }
 
   Future<MonthData> _getData() async {
@@ -47,75 +50,56 @@ class ThisMonth extends State<ThisMonthPage> {
               child: FutureBuilder(
                   future: _init(),
                   builder: (context, snap) {
-                    if(snap.connectionState == ConnectionState.done) {
-                      return FutureBuilder(
-                          future: _getData(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.done) {
-                              if (snapshot.data != null) {
-                                _monthData = snapshot.data;
-                                return Consumer(
-                                    builder: (context, watch, child) {
-                                      if (watch(thisMonthProvider).monthData !=
-                                          null)
-                                        _monthData =
-                                            watch(thisMonthProvider).monthData;
-                                      return Container(
-                                        child: ListView(
-                                          children: <Widget>[
-                                            ListTile(
-                                              title: Text('今月の支出'),
-                                              trailing:
-                                              Text(_monthData.outgo.toString()),
-                                            ),
-                                            ListTile(
-                                              title: Text('今月の収入'),
-                                              trailing:
-                                              Text(
-                                                  _monthData.income.toString()),
-                                            ),
-                                            ListTile(
-                                              title: Text('計'),
-                                              trailing:
-                                              Text(_monthData.sum.toString()),
-                                            ),
-                                            ListTile(
-                                              title: Container(
-                                                width: 50,
-                                                child: RaisedButton(
-                                                  child: const Text('詳細'),
-                                                  color: Colors.blue,
-                                                  shape: const StadiumBorder(),
-                                                  onPressed: () async {
-                                                    //画面遷移（詳細のペ－ジ）
-                                                    await Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              DetailPage(
-                                                                  year: _year,
-                                                                  month: _month)),
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    });
-                              } else {
-                                return Text("error");
-                              }
-                            } else {
-                              return Center(
-                                  child: CupertinoActivityIndicator());
-                            }
-                          });
-                    }else{
-                      return Center(
-                          child: CupertinoActivityIndicator());
+                    if (snap.connectionState == ConnectionState.done) {
+                      return Consumer(builder: (context, watch, child) {
+                        if (watch(thisMonthProvider).monthData != null) {
+                          _monthData = watch(thisMonthProvider).monthData;
+                          return Container(
+                            child: ListView(
+                              children: <Widget>[
+                                ListTile(
+                                  title: Text('今月の支出'),
+                                  trailing: Text(_monthData.outgo.toString()),
+                                ),
+                                ListTile(
+                                  title: Text('今月の収入'),
+                                  trailing: Text(_monthData.income.toString()),
+                                ),
+                                ListTile(
+                                  title: Text('計'),
+                                  trailing: Text(_monthData.sum.toString()),
+                                ),
+                                ListTile(
+                                  title: Container(
+                                    width: 50,
+                                    child: RaisedButton(
+                                      child: const Text('詳細'),
+                                      color: Colors.blue,
+                                      shape: const StadiumBorder(),
+                                      onPressed: () async {
+                                        //画面遷移（詳細のペ－ジ）
+                                        await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => DetailPage(
+                                                  year: _year, month: _month)),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          return Center(
+                            child: Text("データが取得できません\n"
+                                "再起動をお試しください"),
+                          );
+                        }
+                      });
+                    } else {
+                      return Center(child: CupertinoActivityIndicator());
                     }
                   }),
             )
