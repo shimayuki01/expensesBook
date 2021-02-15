@@ -70,84 +70,85 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _index = 0;
   GlobalKey<ScaffoldState> _key = new GlobalKey<ScaffoldState>();
-  var _isDeleting = 0;
 
   Future<void> _deletingDb() async {
     await DbInterface().delDb();
     await Future.delayed(new Duration(seconds: 1));
-    setState(() {
-      _isDeleting = 0;
-    });
   }
 
   Future<void> _deleteAlert() async {
     return await showDialog(
         context: context,
         builder: (context) {
-          return CupertinoAlertDialog(
-              title: Text("全てのデータを削除しますか？"),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  child: Text("いいえ"),
-                  isDefaultAction: true,
-                  onPressed: () => Navigator.pop(context),
-                ),
-                CupertinoDialogAction(
-                  child: Text("はい"),
-                  isDestructiveAction: true,
-                  onPressed: () {
-                    Navigator.pop(context);
-                    setState(() {
-                      _isDeleting = 0;
-                    });
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return CupertinoAlertDialog(
-                              title: Text("本当によろしいですか？"),
-                              actions: <Widget>[
-                                CupertinoDialogAction(
-                                    child: Text("いいえ"),
-                                    isDefaultAction: true,
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    }),
-                                CupertinoDialogAction(
-                                  child: Text("はい"),
-                                  isDestructiveAction: true,
-                                  onPressed: () async {
-                                    Navigator.pop(context);
-                                    setState(() {
-                                      _isDeleting = 1;
+          return CupertinoAlertDialog(title: Text("全てのデータを削除しますか？"), actions: <
+              Widget>[
+            CupertinoDialogAction(
+              child: Text("いいえ"),
+              isDefaultAction: true,
+              onPressed: () => Navigator.pop(context),
+            ),
+            CupertinoDialogAction(
+              child: Text("はい"),
+              isDestructiveAction: true,
+              onPressed: () {
+                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return CupertinoAlertDialog(
+                          title: Text("本当によろしいですか？"),
+                          content: Text("データを削除すると復元することができません"),
+                          actions: <Widget>[
+                            CupertinoDialogAction(
+                                child: Text("いいえ"),
+                                isDefaultAction: true,
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                }),
+                            CupertinoDialogAction(
+                              child: Text("はい"),
+                              isDestructiveAction: true,
+                              onPressed: () async {
+                                await DbInterface().delDb();
+                                await Future.delayed(new Duration(seconds: 1));
+                                Navigator.pop(context);
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return FutureBuilder(
+                                        future: _deletingDb(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.done) {
+                                            return CupertinoAlertDialog(
+                                              title: Text("データを削除しました"),
+                                              actions: [
+                                                CupertinoDialogAction(
+                                                    child: Text("OK"),
+                                                    isDefaultAction: true,
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    })
+                                              ],
+                                            );
+                                          } else {
+                                            return CupertinoAlertDialog(
+                                                title: Container(
+                                                    height: 100,
+                                                    width: 50,
+                                                    child:
+                                                        CupertinoActivityIndicator()));
+                                          }
+                                        },
+                                      );
                                     });
-                                    await _deletingDb();
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return _isDeleting == 1
-                                              ? CupertinoAlertDialog(
-                                                  title:
-                                                      CupertinoActivityIndicator())
-                                              : CupertinoAlertDialog(
-                                                  title: Text("データを削除しました"),
-                                                  actions: [
-                                                    CupertinoDialogAction(
-                                                        child: Text("OK"),
-                                                        isDefaultAction: true,
-                                                        onPressed: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                        })
-                                                  ],
-                                                );
-                                        });
-                                  },
-                                )
-                              ]);
-                        });
-                  },
-                )
-              ]);
+                              },
+                            )
+                          ]);
+                    });
+              },
+            )
+          ]);
         });
   }
 
@@ -220,9 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.format_list_bulleted), title: Text('過去の履歴')),
         ],
       ),
-      body: _isDeleting == 0
-          ? _index == 0 ? ThisMonthPage() : PastListPage()
-          : Center(child: CupertinoActivityIndicator()),
+      body: _index == 0 ? ThisMonthPage() : PastListPage(),
     );
   }
 }
