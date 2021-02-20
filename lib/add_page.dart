@@ -81,16 +81,31 @@ class Add extends State<AddPage> {
                     //   ),
                     // ),
                     //収支のラジオボタン
-                    RadioListTile(
-                        title: Text('収入'),
-                        value: 'in',
-                        groupValue: _payment,
-                        onChanged: _onChanged),
-                    RadioListTile(
-                        title: Text('支出'),
-                        value: 'out',
-                        groupValue: _payment,
-                        onChanged: _onChanged),
+                    Row(
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width / 2,
+                          color: _payment == "in" ? Colors.green : null,
+                          child: RadioListTile(
+                              title: Text('収入'),
+                              value: 'in',
+                              activeColor: Colors.green,
+                              groupValue: _payment,
+                              onChanged: _onChanged),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width / 2,
+                          color: _payment == "out" ? Colors.red : null,
+                          child: RadioListTile(
+                              title: Text('支出'),
+                              value: 'out',
+                              activeColor: Colors.red,
+                              groupValue: _payment,
+                              onChanged: _onChanged),
+                        ),
+                      ],
+                    ),
+
 
                     //日付の入力
                     Container(
@@ -220,13 +235,15 @@ class Add extends State<AddPage> {
                             ],
                             decoration: const InputDecoration(
                                 hintText: '1000', labelText: '金額'),
-                            onChanged: _handleMoney,
-                          ),
+                            onSaved: (String value) {
+                              _money = int.parse(value);
+                            },                          ),
                           RaisedButton(
                               child: const Text("追加"),
                               color: Colors.blue,
                               onPressed: () async {
                                 if (_formKey.currentState.validate()) {
+                                  _formKey.currentState.save();
                                   Scaffold.of(context).showSnackBar(
                                       SnackBar(content: Text('追加しました')));
                                   //追加処理
@@ -252,9 +269,6 @@ class Add extends State<AddPage> {
                                   await Future.delayed(
                                       new Duration(seconds: 1));
                                   Navigator.pop(context);
-                                } else {
-                                  Scaffold.of(context).showSnackBar(
-                                      SnackBar(content: Text('穏やかじゃないですね')));
                                 }
                               }),
                         ],

@@ -21,8 +21,10 @@ class DelUpd extends State<DelUpdPage> {
   int _id;
   String _payment;
   DateTime _date;
+  DateTime _selectDate = DateTime.now();
   String _name;
   int _money;
+  final _formKey = GlobalKey<FormState>();
 
   //収支の切り替え
   void _onChanged(String payment) => setState(() {
@@ -103,114 +105,214 @@ class DelUpd extends State<DelUpdPage> {
       body: SingleChildScrollView(
         child: Column(children: [
           //収支のラジオボタン
-          RadioListTile(
-              title: Text('収入'),
-              value: 'in',
-              groupValue: _payment,
-              onChanged: _onChanged),
-          RadioListTile(
-              title: Text('支出'),
-              value: 'out',
-              groupValue: _payment,
-              onChanged: _onChanged),
-
+          Row(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width / 2,
+                color: _payment == "in" ? Colors.green : null,
+                child: RadioListTile(
+                    title: Text('収入'),
+                    value: 'in',
+                    activeColor: Colors.green,
+                    groupValue: _payment,
+                    onChanged: _onChanged),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width / 2,
+                color: _payment == "out" ? Colors.red : null,
+                child: RadioListTile(
+                    title: Text('支出'),
+                    value: 'out',
+                    activeColor: Colors.red,
+                    groupValue: _payment,
+                    onChanged: _onChanged),
+              ),
+            ],
+          ),
           //日付の入力
-          IconButton(
-              icon: Icon(Icons.calendar_today),
-              onPressed: () async {
-                final selectedDate = await showDatePicker(
-                  context: context,
-                  locale: const Locale('ja'),
-                  initialDate: _date,
-                  firstDate: DateTime(DateTime.now().year - 1),
-                  lastDate: DateTime(DateTime.now().year + 1),
-                );
-                if (selectedDate != null) {
-                  setState(() {
-                    _date = selectedDate;
-                    //_handleDate();
-                  });
-                }
-              }),
-
-          //日付の表示
-          Text(
-            DateFormat('yyyy年M月d日').format(_date),
-            style: TextStyle(fontSize: 25),
+          Container(
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height / 10,
+            child: FlatButton(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('日付'),
+                    Text(
+                      _date.year.toString() +
+                          '/' +
+                          _date.month.toString() +
+                          '/' +
+                          _date.day.toString(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 30,
+                      ),
+                    ),
+                  ],
+                ),
+                textColor: Colors.black,
+                onPressed: () {
+                  showCupertinoModalPopup(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xffffffff),
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: Color(0xff999999),
+                                    width: 0.0,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    CupertinoButton(
+                                      child: Text('キャンセル'),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    CupertinoButton(
+                                      child: Text('完了'),
+                                      onPressed: () {
+                                        setState(() {
+                                          _date = _selectDate;
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ]),
+                            ),
+                            Container(
+                              height: MediaQuery.of(context).size.height / 3,
+                              decoration: BoxDecoration(
+                                color: Color(0xffffffff),
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: Color(0xff999999),
+                                    width: 0.0,
+                                  ),
+                                ),
+                              ),
+                              child: CupertinoDatePicker(
+                                mode: CupertinoDatePickerMode.date,
+                                initialDateTime: _date,
+                                onDateTimeChanged: (DateTime newDateTime) {
+                                  setState(() => _selectDate = newDateTime);
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      });
+                }),
           ),
 
           //名称の入力
-          TextFormField(
-            maxLength: 20,
-            maxLengthEnforced: true,
-            maxLines: 1,
-            initialValue: _name,
-            decoration:
-                const InputDecoration(hintText: '入力してください', labelText: '名称'),
-            onChanged: _handleName,
-          ),
+          Form(
+            key: _formKey,
+            child: Column(children: [
+              TextFormField(
+                maxLength: 20,
+                maxLengthEnforced: true,
+                maxLines: 1,
+                initialValue: _name,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return '入力してくだい';
+                  }
+                  print(value);
+                  return null;
+                },
+                decoration:
+                    const InputDecoration(hintText: 'リンゴ、給与', labelText: '名称'),
+                onChanged: _handleName,
+              ),
+              //金額の入力
+              TextFormField(
+                maxLength: 10,
+                maxLengthEnforced: true,
+                maxLines: 1,
+                initialValue: _money.toString(),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return '入してください';
+                  }
+                  return null;
+                },
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+                ],
+                decoration:
+                    const InputDecoration(hintText: '1000', labelText: '金額'),
+                onSaved: (String value) {
+                  _money = int.parse(value);
+                },
+              ),
+              RaisedButton(
+                  child: const Text("更新"),
+                  color: Colors.blue,
+                  onPressed: () {
+                    if (_formKey.currentState.validate()) {
+                      _formKey.currentState.save();
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return CupertinoAlertDialog(
+                            title: Text("更新しますか？"),
+                            actions: <Widget>[
+                              CupertinoDialogAction(
+                                child: Text("いいえ"),
+                                isDestructiveAction: true,
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                              CupertinoDialogAction(
+                                  child: Text("はい"),
+                                  isDefaultAction: true,
+                                  onPressed: () async {
+                                    //更新処理
+                                    if (_payment == 'out') {
+                                      _money = -_money;
+                                    }
+                                    var upd = Expense(
+                                        id: _id,
+                                        year: _date.year,
+                                        month: _date.month,
+                                        day: _date.day,
+                                        name: _name,
+                                        money: _money);
 
-          //金額の入力
-          TextFormField(
-            maxLength: 7,
-            maxLengthEnforced: true,
-            maxLines: 1,
-            initialValue: _money.toString(),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
-            ],
-            decoration:
-                const InputDecoration(hintText: '入力してください', labelText: '金額'),
-            onChanged: _handleMoney,
+                                    await DbInterface().updateExpense(upd);
+                                    await context
+                                        .read(listProvider)
+                                        .getList(_info.year, _info.month);
+                                    await context
+                                        .read(thisMonthProvider)
+                                        .getMonthData(DateTime.now().year,
+                                            DateTime.now().month);
+                                    await context
+                                        .read(pastMonthProvider)
+                                        .getList();
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  }),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      print("よくわかんない");
+                    }
+                  }),
+            ]),
           ),
-          RaisedButton(
-              child: const Text("更新"),
-              color: Colors.blue,
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return CupertinoAlertDialog(
-                      title: Text("更新しますか？"),
-                      actions: <Widget>[
-                        CupertinoDialogAction(
-                          child: Text("いいえ"),
-                          isDestructiveAction: true,
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        CupertinoDialogAction(
-                            child: Text("はい"),
-                            isDefaultAction: true,
-                            onPressed: () async {
-                              //更新処理
-                              if (_payment == 'out') {
-                                _money = -_money;
-                              }
-                              var upd = Expense(
-                                  id: _id,
-                                  year: _date.year,
-                                  month: _date.month,
-                                  day: _date.day,
-                                  name: _name,
-                                  money: _money);
-
-                              await DbInterface().updateExpense(upd);
-                              await context
-                                  .read(listProvider)
-                                  .getList(_info.year, _info.month);
-                              await context
-                                  .read(thisMonthProvider)
-                                  .getMonthData(DateTime.now().year,
-                                      DateTime.now().month);
-                              await context.read(pastMonthProvider).getList();
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                            }),
-                      ],
-                    );
-                  },
-                );
-              }),
         ]),
       ),
     );
