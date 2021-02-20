@@ -37,12 +37,6 @@ class Add extends State<AddPage> {
     });
   }
 
-//金額の変更
-  void _handleMoney(String money) {
-    setState(() {
-      _money = int.parse(money);
-    });
-  }
 
   //idのインクリメント
   void _handleId() {
@@ -244,8 +238,6 @@ class Add extends State<AddPage> {
                               onPressed: () async {
                                 if (_formKey.currentState.validate()) {
                                   _formKey.currentState.save();
-                                  Scaffold.of(context).showSnackBar(
-                                      SnackBar(content: Text('追加しました')));
                                   //追加処理
                                   if (_payment == 'out') {
                                     _money = -_money;
@@ -258,7 +250,6 @@ class Add extends State<AddPage> {
                                       name: _name,
                                       money: _money);
                                   await DbInterface().insertExpense(add);
-                                  _handleId();
                                   await context
                                       .read(thisMonthProvider)
                                       .getMonthData(DateTime.now().year,
@@ -266,6 +257,8 @@ class Add extends State<AddPage> {
                                   await context
                                       .read(pastMonthProvider)
                                       .getList();
+                                  Scaffold.of(context).showSnackBar(
+                                      SnackBar(content: Text('追加しました')));
                                   await Future.delayed(
                                       new Duration(seconds: 1));
                                   Navigator.pop(context);

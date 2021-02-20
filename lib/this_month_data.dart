@@ -27,10 +27,6 @@ class ThisMonth extends State<ThisMonthPage> {
         .getMonthData(DateTime.now().year, DateTime.now().month);
   }
 
-  Future<MonthData> _getData() async {
-    MonthData aa = await DbInterface().monthSum(_year, _month);
-    return aa;
-  }
 
   Widget build(BuildContext context) {
     return Scaffold(

@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'db_interface.dart';
-import 'package:intl/intl.dart';
 import 'package:expenses_book_app/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -35,13 +34,6 @@ class DelUpd extends State<DelUpdPage> {
   void _handleName(String name) {
     setState(() {
       _name = name;
-    });
-  }
-
-//金額の変更
-  void _handleMoney(String money) {
-    setState(() {
-      _money = int.parse(money);
     });
   }
 
@@ -228,7 +220,6 @@ class DelUpd extends State<DelUpdPage> {
                   if (value.isEmpty) {
                     return '入力してくだい';
                   }
-                  print(value);
                   return null;
                 },
                 decoration:
@@ -300,6 +291,7 @@ class DelUpd extends State<DelUpdPage> {
                                     await context
                                         .read(pastMonthProvider)
                                         .getList();
+
                                     Navigator.pop(context);
                                     Navigator.pop(context);
                                   }),
@@ -307,8 +299,6 @@ class DelUpd extends State<DelUpdPage> {
                           );
                         },
                       );
-                    } else {
-                      print("よくわかんない");
                     }
                   }),
             ]),
