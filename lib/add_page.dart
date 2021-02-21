@@ -37,7 +37,6 @@ class Add extends State<AddPage> {
     });
   }
 
-
   //idのインクリメント
   void _handleId() {
     setState(() {
@@ -100,16 +99,13 @@ class Add extends State<AddPage> {
                       ],
                     ),
 
-
                     //日付の入力
                     Container(
                       width: double.infinity,
-                      height:  MediaQuery.of(context).size.height /
-                          10,
+                      height: MediaQuery.of(context).size.height / 10,
                       child: FlatButton(
                           child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('日付'),
                               Text(
@@ -231,8 +227,9 @@ class Add extends State<AddPage> {
                                 hintText: '1000', labelText: '金額'),
                             onSaved: (String value) {
                               _money = int.parse(value);
-                            },                          ),
-                          RaisedButton(
+                            },
+                          ),
+                          CupertinoButton(
                               child: const Text("追加"),
                               color: Colors.blue,
                               onPressed: () async {
@@ -257,10 +254,6 @@ class Add extends State<AddPage> {
                                   await context
                                       .read(pastMonthProvider)
                                       .getList();
-                                  Scaffold.of(context).showSnackBar(
-                                      SnackBar(content: Text('追加しました')));
-                                  await Future.delayed(
-                                      new Duration(seconds: 1));
                                   Navigator.pop(context);
                                 }
                               }),

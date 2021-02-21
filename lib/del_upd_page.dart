@@ -247,7 +247,7 @@ class DelUpd extends State<DelUpdPage> {
                   _money = int.parse(value);
                 },
               ),
-              RaisedButton(
+              CupertinoButton(
                   child: const Text("更新"),
                   color: Colors.blue,
                   onPressed: () {
@@ -282,15 +282,16 @@ class DelUpd extends State<DelUpdPage> {
 
                                     await DbInterface().updateExpense(upd);
                                     await context
+                                        .read(pastMonthProvider)
+                                        .getList();
+                                    await context
                                         .read(listProvider)
                                         .getList(_info.year, _info.month);
                                     await context
                                         .read(thisMonthProvider)
                                         .getMonthData(DateTime.now().year,
                                             DateTime.now().month);
-                                    await context
-                                        .read(pastMonthProvider)
-                                        .getList();
+
 
                                     Navigator.pop(context);
                                     Navigator.pop(context);
