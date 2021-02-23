@@ -1,11 +1,11 @@
 import 'package:admob_flutter/admob_flutter.dart';
+import 'package:expenses_book_app/make_chart.dart';
 import 'package:expenses_book_app/services/admob.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'db_interface.dart';
 import 'package:expenses_book_app/main.dart';
-
 import 'detail.dart';
 
 class ThisMonthPage extends StatefulWidget {
@@ -27,20 +27,19 @@ class ThisMonth extends State<ThisMonthPage> {
         .getMonthData(DateTime.now().year, DateTime.now().month);
   }
 
-
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            // AdmobBanner(
-            //   adUnitId: AdMobService().getBannerAdUnitId(),
-            //   adSize: AdmobBannerSize(
-            //     width: MediaQuery.of(context).size.width.toInt(),
-            //     height: AdMobService().getHeight(context).toInt(),
-            //     name: 'SMART_BANNER',
-            //   ),
-            // ),
+            AdmobBanner(
+              adUnitId: AdMobService().getBannerAdUnitId(),
+              adSize: AdmobBannerSize(
+                width: MediaQuery.of(context).size.width.toInt(),
+                height: AdMobService().getHeight(context).toInt(),
+                name: 'SMART_BANNER',
+              ),
+            ),
 
             Expanded(
               child: FutureBuilder(
@@ -67,21 +66,24 @@ class ThisMonth extends State<ThisMonthPage> {
                                 ),
                                 ListTile(
                                   title: Container(
-                                    width: 50,
-                                    child: RaisedButton(
-                                      child: const Text('詳細'),
-                                      color: Colors.blue,
-                                      shape: const StadiumBorder(),
-                                      onPressed: () async {
-                                        //画面遷移（詳細のペ－ジ）
-                                        await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => DetailPage(
-                                                  year: _year, month: _month)),
-                                        );
-                                      },
-                                    ),
+                                    height:150,
+                                    child:MakeMonthChart()
+                                        .makeChart(_monthData),
+                                  ),
+                                ),
+                                ListTile(
+                                  title: CupertinoButton(
+                                    child: const Text('詳細'),
+                                    color: Colors.blue,
+                                    onPressed: () async {
+                                      //画面遷移（詳細のペ－ジ）
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => DetailPage(
+                                                year: _year, month: _month)),
+                                      );
+                                    },
                                   ),
                                 ),
                               ],
