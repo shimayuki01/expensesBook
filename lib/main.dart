@@ -7,7 +7,7 @@ import 'package:expenses_book_app/this_month_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_riverpod/all.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/widgets.dart';
 import 'package:expenses_book_app/services/JapaneseCupertinoLocalizations.dart'
     as jcl;

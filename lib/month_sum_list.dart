@@ -1,7 +1,7 @@
 import 'package:expenses_book_app/db_interface.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/all.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'detail.dart';
 import 'main.dart';
 

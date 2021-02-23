@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'db_interface.dart';
 import 'main.dart';
-import 'package:flutter_riverpod/all.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AddPage extends StatefulWidget {
   @override
@@ -37,12 +37,12 @@ class Add extends State<AddPage> {
     });
   }
 
-  //idのインクリメント
-  void _handleId() {
-    setState(() {
-      _id++;
-    });
-  }
+  // //idのインクリメント
+  // void _handleId() {
+  //   setState(() {
+  //     _id++;
+  //   });
+  // }
 
   void initState() {
     super.initState();
@@ -65,14 +65,14 @@ class Add extends State<AddPage> {
               return SingleChildScrollView(
                 child: Column(
                   children: [
-                    // AdmobBanner(
-                    //   adUnitId: AdMobService().getBannerAdUnitId(),
-                    //   adSize: AdmobBannerSize(
-                    //     width: MediaQuery.of(context).size.width.toInt(),
-                    //     height: AdMobService().getHeight(context).toInt(),
-                    //     name: 'SMART_BANNER',
-                    //   ),
-                    // ),
+                    AdmobBanner(
+                      adUnitId: AdMobService().getBannerAdUnitId(),
+                      adSize: AdmobBannerSize(
+                        width: MediaQuery.of(context).size.width.toInt(),
+                        height: AdMobService().getHeight(context).toInt(),
+                        name: 'SMART_BANNER',
+                      ),
+                    ),
                     //収支のラジオボタン
                     Row(
                       children: [

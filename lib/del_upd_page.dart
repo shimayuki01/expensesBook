@@ -1,3 +1,5 @@
+import 'package:admob_flutter/admob_flutter.dart';
+import 'package:expenses_book_app/services/admob.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -96,6 +98,14 @@ class DelUpd extends State<DelUpdPage> {
       ),
       body: SingleChildScrollView(
         child: Column(children: [
+          AdmobBanner(
+            adUnitId: AdMobService().getBannerAdUnitId(),
+            adSize: AdmobBannerSize(
+              width: MediaQuery.of(context).size.width.toInt(),
+              height: AdMobService().getHeight(context).toInt(),
+              name: 'SMART_BANNER',
+            ),
+          ),
           //収支のラジオボタン
           Row(
             children: [
