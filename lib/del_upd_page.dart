@@ -87,6 +87,7 @@ class DelUpd extends State<DelUpdPage> {
                             await context
                                 .read(thisMonthProvider)
                                 .getMonthData(_date.year, _date.month);
+                            await context.read(pastMonthProvider).getList();
                             Navigator.pop(context);
                             Navigator.pop(context);
                           })
