@@ -13,22 +13,19 @@ class PastListPage extends StatefulWidget {
 class PastList extends State<PastListPage> {
   List<MonthData> items;
 
-  Future<List<MonthData>> _getMap() async {
-    List<MonthData> map = await DbInterface().monthSumList();
-    return map;
+  Future<void> _getMap() async {
+    await context.read(pastMonthProvider).getList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Container(
         height: double.infinity,
         child: FutureBuilder(
             future: _getMap(),
             builder: (context, snap) {
               if (snap.connectionState == ConnectionState.done) {
-                items = snap.data;
                 return Consumer(builder: (context, watch, child) {
                   if (watch(pastMonthProvider).pastMonthSum != null)
                     items = watch(pastMonthProvider).pastMonthSum;
