@@ -27,41 +27,48 @@ class PastList extends State<PastListPage> {
             builder: (context, snap) {
               if (snap.connectionState == ConnectionState.done) {
                 return Consumer(builder: (context, watch, child) {
-                  if (watch(pastMonthProvider).pastMonthSum != null)
+                  if (watch(pastMonthProvider).pastMonthSum != null) {
                     items = watch(pastMonthProvider).pastMonthSum;
-                  return ListView.separated(
-                    itemCount: items.length + 1,
-                    separatorBuilder: (BuildContext context, index) => Divider(
-                      color: Colors.black,
-                    ),
-                    itemBuilder: (context, index) {
-                      if (index < items.length) {
-                        //収支のリスト表示
-                        return ListTile(
-                          leading: Text(
-                              '${items[index].year}年　${items[index].month}月'),
-                          title: Column(
-                            children: [
-                              Text('収入　${items[index].income}'),
-                              Text('支出　${items[index].outgo}'),
-                            ],
-                          ),
-                          trailing: Text(items[index].sum.toString()),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DetailPage(
-                                      year: items[index].year,
-                                      month: items[index].month)),
-                            );
-                          },
-                        );
-                      } else {
-                        return Container(height: 70, child: Text(""));
-                      }
-                    },
-                  );
+                    return ListView.separated(
+                      itemCount: items.length + 1,
+                      separatorBuilder: (BuildContext context, index) =>
+                          Divider(
+                        color: Colors.black,
+                      ),
+                      itemBuilder: (context, index) {
+                        if (index < items.length) {
+                          //収支のリスト表示
+                          return ListTile(
+                            leading: Text(
+                                '${items[index].year}年　${items[index].month}月'),
+                            title: Column(
+                              children: [
+                                Text('収入　${items[index].income}'),
+                                Text('支出　${items[index].outgo}'),
+                              ],
+                            ),
+                            trailing: Text(items[index].sum.toString()),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => DetailPage(
+                                        year: items[index].year,
+                                        month: items[index].month)),
+                              );
+                            },
+                          );
+                        } else {
+                          return Container(height: 70, child: Text(""));
+                        }
+                      },
+                    );
+                  } else {
+                    return Center(
+                      child: Text("データを取得できませんでした"
+                          "再起度をお試しください"),
+                    );
+                  }
                 });
               } else {
                 return Center(child: CupertinoActivityIndicator());
