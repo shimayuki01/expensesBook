@@ -176,6 +176,12 @@ class Add extends State<AddPage> {
                                         child: CupertinoDatePicker(
                                           mode: CupertinoDatePickerMode.date,
                                           initialDateTime: _date,
+                                          maximumDate: DateTime(
+                                              DateTime.now().year + 5,
+                                              DateTime.now().month),
+                                          minimumDate: DateTime(
+                                              DateTime.now().year - 5,
+                                              DateTime.now().month),
                                           onDateTimeChanged:
                                               (DateTime newDateTime) {
                                             setState(() =>

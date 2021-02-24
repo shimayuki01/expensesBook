@@ -207,6 +207,12 @@ class DelUpd extends State<DelUpdPage> {
                               child: CupertinoDatePicker(
                                 mode: CupertinoDatePickerMode.date,
                                 initialDateTime: _date,
+                                maximumDate: DateTime(
+                                    DateTime.now().year + 5,
+                                    DateTime.now().month),
+                                minimumDate: DateTime(
+                                    DateTime.now().year - 5,
+                                    DateTime.now().month),
                                 onDateTimeChanged: (DateTime newDateTime) {
                                   setState(() => _selectDate = newDateTime);
                                 },
