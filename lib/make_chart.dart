@@ -5,9 +5,7 @@ class MakeMonthChart {
   List<charts.Series> list;
 
   makeChart(MonthData _data) {
-    print(_data);
     list = getData(_data);
-    print(list);
     return barChart();
   }
 
