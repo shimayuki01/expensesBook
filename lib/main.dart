@@ -171,7 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: ListView(
             children: [
               Container(
-                color: Colors.grey,
+                color: Colors.blue,
                 child: ListTile(
                   title: Text('オプション'),
                 ),
@@ -187,14 +187,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 onTap: _deleteAlert,
               ),
-              ListTile(
-                title: Text(
-                  'お問い合わせ',
-                ),
-                trailing: Icon(
-                  CupertinoIcons.mail,
-                ),
-              )
+              // ListTile(
+              //   title: Text(
+              //     'お問い合わせ',
+              //   ),
+              //   trailing: Icon(
+              //     CupertinoIcons.mail,
+              //   ),
+              //)
             ],
           ),
         ),
