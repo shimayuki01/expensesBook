@@ -163,10 +163,10 @@ class DbInterface {
 
   //過去の月別収支合計のリスト表示(一年)
   Future<List<MonthData>> monthSumList() async {
-    List<MonthData> msl = []..length = 12;
+    List<MonthData> msl = []..length = 36;
     int _year = DateTime.now().year;
     int _month = DateTime.now().month;
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < msl.length; i++) {
       msl[i] = await monthSum(_year, _month);
       if (_month == 1) {
         _year = _year - 1;
