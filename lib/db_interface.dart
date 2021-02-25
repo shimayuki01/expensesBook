@@ -85,9 +85,10 @@ class DbInterface {
 
   //データベース削除
   Future<void> delDb() async {
-    Directory documentDirectory = await getApplicationDocumentsDirectory();
-    final path = join(documentDirectory.path, "expenses_database.db");
-    await deleteDatabase(path);
+    int _max = await getMaxId();
+    for(int i = 0; i <= _max;i++){
+      deleteExpense(i);
+    }
   }
 
   //データ挿入
@@ -162,17 +163,16 @@ class DbInterface {
 
   //過去の月別収支合計のリスト表示(一年)
   Future<List<MonthData>> monthSumList() async {
-    List<MonthData> msl = []..length = 12;
+    List<MonthData> msl = []..length = 36;
     int _year = DateTime.now().year;
     int _month = DateTime.now().month;
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < msl.length; i++) {
+      msl[i] = await monthSum(_year, _month);
       if (_month == 1) {
         _year = _year - 1;
         _month = 12;
       } else
         _month = _month - 1;
-
-      msl[i] = await monthSum(_year, _month);
     }
     return msl;
   }

@@ -1,8 +1,9 @@
 import 'package:expenses_book_app/db_interface.dart';
 import 'package:expenses_book_app/del_upd_page.dart';
 import 'package:expenses_book_app/main.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/all.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DetailPage extends StatefulWidget {
   final int year;
@@ -25,61 +26,66 @@ class Detail extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("詳細"),
+      appBar: CupertinoNavigationBar(
+        middle:
+            Text(widget.year.toString() + "年" + widget.month.toString() + "月"),
       ),
       body: Container(
         height: double.infinity,
         child: FutureBuilder(
             future: _getMap(),
             builder: (context, snap) {
-              return Consumer(
-                builder: (context, watch, child) {
-                  items = watch(listProvider).listExpense;
-                  if (items != null) {
-                    return ListView.separated(
-                        itemCount: items.length,
-                        separatorBuilder: (BuildContext context, index) =>
-                            Divider(
-                              color: Colors.black,
-                            ),
-                        itemBuilder: (context, index) {
-                          items[index].money > 0
-                              ? _money = items[index].money
-                              : _money = -items[index].money;
-                          //収支のリスト表示
-                          return ListTile(
-                            leading: Column(
-                              children: [
-                                items[index].money > 0
-                                    ? Text("収入")
-                                    : Text(
-                                        "支出",
-                                        style: TextStyle(color: Colors.red),
-                                      ),
-                                Text(items[index].day.toString()),
-                              ],
-                            ),
-                            title: Column(
-                              children: [
-                                Text(items[index].name),
-                              ],
-                            ),
-                            trailing: Text(_money.toString()),
-                            onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        DelUpdPage(data: items[index]))),
-                          );
-                        });
-                  } else {
-                    return Center(
-                      child: Text("表示するものがありません"),
-                    );
-                  }
-                },
-              );
+              if (snap.connectionState == ConnectionState.done) {
+                return Consumer(
+                  builder: (context, watch, child) {
+                    items = watch(listProvider).listExpense;
+                    if (items != null) {
+                      return ListView.separated(
+                          itemCount: items.length,
+                          separatorBuilder: (BuildContext context, index) =>
+                              Divider(
+                                color: Colors.black,
+                              ),
+                          itemBuilder: (context, index) {
+                            items[index].money > 0
+                                ? _money = items[index].money
+                                : _money = -items[index].money;
+                            //収支のリスト表示
+                            return ListTile(
+                              leading: Column(
+                                children: [
+                                  items[index].money > 0
+                                      ? Text("収入")
+                                      : Text(
+                                          "支出",
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                  Text(items[index].day.toString()),
+                                ],
+                              ),
+                              title: Column(
+                                children: [
+                                  Text(items[index].name),
+                                ],
+                              ),
+                              trailing: Text(_money.toString()),
+                              onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          DelUpdPage(data: items[index]))),
+                            );
+                          });
+                    } else {
+                      return Center(
+                        child: Text("表示するものがありません"),
+                      );
+                    }
+                  },
+                );
+              } else {
+                return Center(child: CupertinoActivityIndicator());
+              }
             }),
       ),
     );

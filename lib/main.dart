@@ -1,13 +1,16 @@
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:expenses_book_app/add_page.dart';
 import 'package:expenses_book_app/db_interface.dart';
 import 'package:expenses_book_app/month_sum_list.dart';
 import 'package:expenses_book_app/provider.dart';
+import 'package:expenses_book_app/this_month_data.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_riverpod/all.dart';
-import 'dart:async';
-import 'detail.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/widgets.dart';
+import 'package:expenses_book_app/services/JapaneseCupertinoLocalizations.dart'
+    as jcl;
 
 final listProvider = ChangeNotifierProvider(
   (ref) => DbListReload(),
@@ -20,6 +23,8 @@ final pastMonthProvider = ChangeNotifierProvider(
 );
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Admob.initialize();
   runApp(ProviderScope(child: MyApp()));
 }
 
@@ -28,20 +33,27 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.grey,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: <TargetPlatform, PageTransitionsBuilder>{
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(), // iOS風
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+          },
+        ),
       ),
       home: MyHomePage(title: '家計簿アプリ'),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
+        DefaultCupertinoLocalizations.delegate,
+        jcl.JapaneseCupertinoLocalizations.delegate
       ],
       supportedLocales: [
-        const Locale("en"),
-        const Locale("ja"),
+        const Locale('en', 'US'),
+        const Locale('ja', 'JP'),
       ],
+      locale: Locale('ja', 'JP'),
     );
   }
 }
@@ -56,101 +68,137 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Expense test1 =
-      Expense(id: 1, year: 2021, month: 1, day: 7, name: "fafdaf", money: -300);
+  int _index = 0;
+  GlobalKey<ScaffoldState> _key = new GlobalKey<ScaffoldState>();
 
-  MonthData _monthData;
-  int _year = DateTime.now().year;
-  int _month = DateTime.now().month;
-
-  Future<void> _init() async {
-    await DbInterface().init();
-    await context.read(listProvider).getList(_year, _month);
+  Future<void> _deletingDB() async {
+    await DbInterface().delDb();
+    await context
+        .read(thisMonthProvider)
+        .getMonthData(DateTime.now().year, DateTime.now().month);
     await context.read(pastMonthProvider).getList();
   }
 
-  Future<MonthData> _getData() async {
-    MonthData aa = await DbInterface().monthSum(_year, _month);
-    return aa;
+  Future<void> _deleteAlert() async {
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+              title: Text("全てのデータを削除しますか？"),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: Text("いいえ"),
+                  isDefaultAction: true,
+                  onPressed: () => Navigator.pop(context),
+                ),
+                CupertinoDialogAction(
+                  child: Text("はい"),
+                  isDestructiveAction: true,
+                  onPressed: () {
+                    Navigator.pop(context);
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return CupertinoAlertDialog(
+                              title: Text("本当によろしいですか？"),
+                              content: Text("データを削除すると復元することができません"),
+                              actions: <Widget>[
+                                CupertinoDialogAction(
+                                    child: Text("いいえ"),
+                                    isDefaultAction: true,
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    }),
+                                CupertinoDialogAction(
+                                  child: Text("はい"),
+                                  isDestructiveAction: true,
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return FutureBuilder(
+                                            future: _deletingDB(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.done) {
+                                                return CupertinoAlertDialog(
+                                                  title: Text("データを削除しました"),
+                                                  actions: [
+                                                    CupertinoDialogAction(
+                                                        child: Text("OK"),
+                                                        isDefaultAction: true,
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        })
+                                                  ],
+                                                );
+                                              } else {
+                                                return CupertinoAlertDialog(
+                                                    title: Container(
+                                                        height: 100,
+                                                        width: 50,
+                                                        child:
+                                                            CupertinoActivityIndicator()));
+                                              }
+                                            },
+                                          );
+                                        });
+                                  },
+                                )
+                              ]);
+                        });
+                  },
+                )
+              ]);
+        });
   }
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
+      key: _key,
+      appBar: CupertinoNavigationBar(
+          middle: _index == 0 ? Text("今月の収支") : Text("過去の履歴"),
+          trailing: GestureDetector(
+              child: Icon(CupertinoIcons.settings),
+              onTap: () {
+                _key.currentState.openEndDrawer();
+              })),
+      endDrawer: Container(
+        width: MediaQuery.of(context).size.width / 2,
+        child: Drawer(
+          child: ListView(
+            children: [
+              Container(
+                color: Colors.blue,
+                child: ListTile(
+                  title: Text('オプション'),
+                ),
+              ),
+              ListTile(
+                title: Text(
+                  'データの全削除',
+                  style: TextStyle(color: Colors.red),
+                ),
+                trailing: Icon(
+                  CupertinoIcons.delete,
+                  color: Colors.red,
+                ),
+                onTap: _deleteAlert,
+              ),
+              // ListTile(
+              //   title: Text(
+              //     'お問い合わせ',
+              //   ),
+              //   trailing: Icon(
+              //     CupertinoIcons.mail,
+              //   ),
+              //)
+            ],
+          ),
+        ),
       ),
-      body: FutureBuilder(
-          future: _init(),
-          builder: (context, ddd) {
-            return FutureBuilder(
-                future: _getData(),
-                builder: (context, snapshot) {
-                  if (snapshot.data != null) {
-                    _monthData = snapshot.data;
-                    return Consumer(builder: (context, watch, child) {
-                      if (watch(thisMonthProvider).monthData != null)
-                        _monthData = watch(thisMonthProvider).monthData;
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 150),
-                        child: Container(
-                          child: ListView(
-                            children: <Widget>[
-                              ListTile(
-                                title: Text('今月の支出'),
-                                trailing: Text(_monthData.outgo.toString()),
-                              ),
-                              ListTile(
-                                title: Text('今月の収入'),
-                                trailing: Text(_monthData.income.toString()),
-                              ),
-                              ListTile(
-                                title: Text('計'),
-                                trailing: Text(_monthData.sum.toString()),
-                              ),
-                              ListTile(
-                                title: Container(
-                                  width: 50,
-                                  child: RaisedButton(
-                                    child: const Text('詳細'),
-                                    color: Colors.blue,
-                                    shape: const StadiumBorder(),
-                                    onPressed: () async {
-                                      //画面遷移（詳細のペ－ジ）
-                                      await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => DetailPage(
-                                                year: _year, month: _month)),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                              ListTile(
-                                title: RaisedButton(
-                                  child: Text('過去の履歴'),
-                                  color: Colors.cyanAccent,
-                                  shape: const StadiumBorder(),
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                PastListPage()));
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    });
-                  } else {
-                    return Text("era");
-                  }
-                });
-          }),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           //画面遷移（追加のページ）
@@ -160,7 +208,23 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         },
         child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      bottomNavigationBar: CupertinoTabBar(
+        currentIndex: _index,
+        onTap: (newIndex) {
+          setState(() {
+            _index = newIndex;
+          });
+        },
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+              icon: Icon(Icons.trending_up), title: Text('今月')),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.format_list_bulleted), title: Text('過去の履歴')),
+        ],
+      ),
+      body: _index == 0 ? ThisMonthPage() : PastListPage(),
     );
   }
 }
