@@ -47,7 +47,16 @@ class PastList extends State<PastListPage> {
                                 Text('支出　${items[index].outgo}'),
                               ],
                             ),
-                            trailing: Text(items[index].sum.toString()),
+                            trailing: Row(
+                              children: [
+                                Text("計"),
+                                Text(items[index].sum.toString(),
+                                    style: TextStyle(
+                                    color: items[index].sum < 0
+                                    ? Colors.red
+                                    : null),),
+                              ],
+                            ),
                             onTap: () {
                               Navigator.push(
                                 context,

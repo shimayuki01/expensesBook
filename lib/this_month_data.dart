@@ -4,6 +4,7 @@ import 'package:expenses_book_app/services/admob.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart';
 import 'db_interface.dart';
 import 'package:expenses_book_app/main.dart';
 import 'detail.dart';
@@ -40,7 +41,6 @@ class ThisMonth extends State<ThisMonthPage> {
                 name: 'SMART_BANNER',
               ),
             ),
-
             Expanded(
               child: FutureBuilder(
                   future: _init(),
@@ -53,22 +53,27 @@ class ThisMonth extends State<ThisMonthPage> {
                             child: ListView(
                               children: <Widget>[
                                 ListTile(
-                                  title: Text('今月の支出'),
-                                  trailing: Text(_monthData.outgo.toString()),
-                                ),
-                                ListTile(
                                   title: Text('今月の収入'),
                                   trailing: Text(_monthData.income.toString()),
                                 ),
                                 ListTile(
-                                  title: Text('計'),
-                                  trailing: Text(_monthData.sum.toString()),
+                                  title: Text('今月の支出'),
+                                  trailing: Text(_monthData.outgo.toString()),
                                 ),
                                 ListTile(
+                                    title: Text('計'),
+                                    trailing: Text(
+                                      _monthData.sum.toString(),
+                                      style: TextStyle(
+                                          color: _monthData.sum < 0
+                                              ? Colors.red
+                                              : null),
+                                    )),
+                                ListTile(
                                   title: Container(
-                                    height:150,
-                                    child:MakeMonthChart()
-                                        .makeChart(_monthData),
+                                    height: 150,
+                                    child:
+                                        MakeMonthChart().makeChart(_monthData),
                                   ),
                                 ),
                                 ListTile(
