@@ -4,7 +4,6 @@ import 'package:expenses_book_app/services/admob.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path/path.dart';
 import 'db_interface.dart';
 import 'package:expenses_book_app/main.dart';
 import 'detail.dart';
@@ -67,7 +66,7 @@ class ThisMonth extends State<ThisMonthPage> {
                                       style: TextStyle(
                                           color: _monthData.sum < 0
                                               ? Colors.red
-                                              : null),
+                                              : Colors.black),
                                     )),
                                 ListTile(
                                   title: Container(
