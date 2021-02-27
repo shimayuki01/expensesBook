@@ -68,7 +68,11 @@ class Detail extends State<DetailPage> {
                                   Text(items[index].name),
                                 ],
                               ),
-                              trailing: Text(_money.toString()),
+                              trailing: Text(_money.toString(),style: TextStyle(
+                                color: items[index].money > 0
+                                    ? Colors.black
+                                    : Colors.red,
+                              ),),
                               onTap: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
