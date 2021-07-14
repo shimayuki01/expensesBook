@@ -1,6 +1,6 @@
 # expenses_book_app
 
-A new Flutter application.
+flutterとSQLiteを使用した家計簿アプリ
 
 ## Getting Started
 
